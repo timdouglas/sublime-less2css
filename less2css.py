@@ -16,6 +16,8 @@ class LessToCss:
     else:
       fn = file
 
+    print file
+
     fn_css = re.sub('\.less', '.css', fn)
 
     cmd = ["lessc", fn, fn_css, "-x", "--verbose"]
@@ -35,12 +37,12 @@ class LessToCss:
     return out
 
   def convertAll(self):
-    #for now this only works for my main work project...
-
     err_count = 0;
 
-    #TODO: make walk path configureable
-    for r,d,f in os.walk("/home/tim/workspace/ae_projects/jinx/web/css"):
+    settings = sublime.load_settings('less2css.sublime-settings')
+    base = settings.get("cssBaseDir")
+
+    for r,d,f in os.walk(base):
       for files in f:
         if files.endswith(".less"):
           #add path to file name
@@ -92,3 +94,13 @@ class AllLessToCssCommand(sublime_plugin.TextCommand):
 class LessToCssSave(sublime_plugin.EventListener):
   def on_post_save(self, view):
     view.run_command("less_to_css")
+
+#change css base setting
+class SetCssBaseCommand(sublime_plugin.WindowCommand):
+  def run(self):
+    self.window.show_input_panel("Enter Your CSS Base Directory: ", '', lambda s: self.set_css_setting(s), None, None)
+
+  def set_css_setting(self, text):
+    settings = sublime.load_settings('less2css.sublime-settings')
+    settings.set("cssBaseDir", text)
+    sublime.status_message("CSS Base Directory updated")

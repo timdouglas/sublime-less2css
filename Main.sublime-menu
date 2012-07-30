@@ -4,11 +4,13 @@
     "children":
     [
       {
-        "caption": "AE Projects",
-        "id": "ae",
+        "caption": "Less > Css",
+        "id": "l2c",
         "children":
         [
-          { "command": "all_less_to_css", "caption": "Compile less to css" }
+          { "command": "all_less_to_css", "caption": "Compile less to css" },
+          { "command": "set_css_base", "caption": "Set CSS base directory"},
+          { "command": "less_to_css", "caption": "Compile this less file to css"}
         ]
       }
     ]

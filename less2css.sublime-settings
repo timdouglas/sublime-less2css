@@ -1,0 +1,6 @@
+/*
+ * Less2Css default settings
+ */
+{
+  "cssBaseDir": "./css"
+}
