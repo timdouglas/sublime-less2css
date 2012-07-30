@@ -1,0 +1,16 @@
+[
+  {
+    "id": "project",
+    "children":
+    [
+      {
+        "caption": "AE Projects",
+        "id": "ae",
+        "children":
+        [
+          { "command": "all_less_to_css", "caption": "Compile less to css" }
+        ]
+      }
+    ]
+  }
+]
