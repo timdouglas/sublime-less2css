@@ -101,6 +101,14 @@ class SetCssBaseCommand(sublime_plugin.WindowCommand):
     self.window.show_input_panel("Enter Your CSS Base Directory: ", '', lambda s: self.set_css_setting(s), None, None)
 
   def set_css_setting(self, text):
-    settings = sublime.load_settings('less2css.sublime-settings')
-    settings.set("cssBaseDir", text)
-    sublime.status_message("CSS Base Directory updated")
+    settings_base = 'less2css.sublime-settings'
+
+    settings = sublime.load_settings(settings_base)
+    
+    if os.path.isdir(text):
+      settings.set("cssBaseDir", text)
+      sublime.save_settings(settings_base) #have to assume this is successful...
+
+      sublime.status_message("CSS Base Directory updated")
+    else:
+      sublime.error_message("Entered directory does not exist")
