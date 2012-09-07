@@ -13,4 +13,4 @@ Features
 Installation
 ============
 
-Just drop into your sublime packages directory until it goes into the package manager...
+Either clone into your sublime packages directory, or just use [Package Control](https://github.com/wbond/sublime_package_control/)
