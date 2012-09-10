@@ -9,6 +9,8 @@ Features
  * Automatically compile less -> css on save when editing a .less file in sublime
  * Reports compilation errors
  * Compile all less files in a directory to css files
+ 
+NB This plugin requires lessc to be in your execution path 
 
 Installation
 ============
