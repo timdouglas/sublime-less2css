@@ -16,11 +16,15 @@ class LessToCss:
     else:
       fn = file
 
-    print file
-
     fn_css = re.sub('\.less', '.css', fn)
 
-    cmd = ["lessc", fn, fn_css, "-x", "--verbose"]
+    settings = sublime.load_settings('less2css.sublime-settings')
+    output_dir = settings.get("outputDir", "")
+
+    #".split(x)[1]" returns the file.css part of the /whole/path/
+    css_output = os.path.join(output_dir, os.path.split(fn_css)[1])
+
+    cmd = ["lessc", fn, css_output, "-x", "--verbose"]
 
     #run compiler
     p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
@@ -40,7 +44,7 @@ class LessToCss:
     err_count = 0;
 
     settings = sublime.load_settings('less2css.sublime-settings')
-    base = settings.get("cssBaseDir")
+    base = settings.get("lessBaseDir")
 
     for r,d,f in os.walk(base):
       for files in f:
@@ -96,19 +100,36 @@ class LessToCssSave(sublime_plugin.EventListener):
     view.run_command("less_to_css")
 
 #change css base setting
-class SetCssBaseCommand(sublime_plugin.WindowCommand):
+class SetLessBaseCommand(sublime_plugin.WindowCommand):
   def run(self):
-    self.window.show_input_panel("Enter Your CSS Base Directory: ", '', lambda s: self.set_css_setting(s), None, None)
+    self.window.show_input_panel("Enter Your Less Base Directory: ", '', lambda s: self.set_less_setting(s), None, None)
 
-  def set_css_setting(self, text):
+  def set_less_setting(self, text):
     settings_base = 'less2css.sublime-settings'
 
     settings = sublime.load_settings(settings_base)
     
     if os.path.isdir(text):
-      settings.set("cssBaseDir", text)
+      settings.set("lessBaseDir", text)
       sublime.save_settings(settings_base) #have to assume this is successful...
 
-      sublime.status_message("CSS Base Directory updated")
+      sublime.status_message("Less Base Directory updated")
+    else:
+      sublime.error_message("Entered directory does not exist")
+
+class SetOutputDirCommand(sublime_plugin.WindowCommand):
+  def run(self):
+    self.window.show_input_panel("Enter CSS Output Directory: ", "", lambda s: self.set_output_dir(s), None, None)
+
+  def set_output_dir(self, text):
+    settings_base = 'less2css.sublime-settings'
+
+    settings = sublime.load_settings(settings_base)
+    
+    if os.path.isdir(text):
+      settings.set("outputDir", text)
+      sublime.save_settings(settings_base)
+
+      sublime.status_message("Output directory updated")
     else:
       sublime.error_message("Entered directory does not exist")
