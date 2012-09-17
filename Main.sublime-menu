@@ -9,7 +9,8 @@
         "children":
         [
           { "command": "all_less_to_css", "caption": "Compile less to css" },
-          { "command": "set_css_base", "caption": "Set CSS base directory"},
+          { "command": "set_less_base", "caption": "Set Less base directory"},
+          { "command": "set_output_dir", "caption": "Set CSS output directory"},
           { "command": "less_to_css", "caption": "Compile this less file to css"}
         ]
       }
