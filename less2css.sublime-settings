@@ -3,5 +3,6 @@
  */
 {
   "lessBaseDir": "./css",
-  "ouptutDir": ""
+  "ouptutDir": "",
+  "minify": true
 }

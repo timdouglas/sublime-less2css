@@ -20,11 +20,15 @@ class LessToCss:
 
     settings = sublime.load_settings('less2css.sublime-settings')
     output_dir = settings.get("outputDir", "")
+    minimised = settings.get("minify", True)
 
     #".split(x)[1]" returns the file.css part of the /whole/path/
     css_output = os.path.join(output_dir, os.path.split(fn_css)[1])
 
-    cmd = ["lessc", fn, css_output, "-x", "--verbose"]
+    if minimised == True:
+      cmd = ["lessc", fn, css_output, "-x", "--verbose"]
+    else:
+      cmd = ["lessc", fn, css_output, "--verbose"]
 
     #run compiler
     p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
@@ -133,3 +137,27 @@ class SetOutputDirCommand(sublime_plugin.WindowCommand):
       sublime.status_message("Output directory updated")
     else:
       sublime.error_message("Entered directory does not exist")
+
+#toggle minification
+class toggleCssMinificationCommand(sublime_plugin.WindowCommand):
+  def run(self):
+    #show yes/no input
+    self.window.show_quick_panel(["Minify css", "Don't minify css"], lambda s: self.set_minify_flag(s))
+
+  def set_minify_flag(self, minify):
+    minify_flag = False
+
+    if minify == 0:
+      minify_flag = True
+
+    settings_base = 'less2css.sublime-settings'
+    settings = sublime.load_settings(settings_base)
+
+    if minify == -1:
+      #input was cancelled, don't change
+      minify_flag = settings.get("minify", True) #existing or default
+
+    settings.set("minify", minify_flag)
+    sublime.save_settings(settings_base)
+
+    sublime.status_message("Updated minify flag")
