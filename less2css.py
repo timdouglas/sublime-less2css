@@ -33,6 +33,8 @@ class LessToCss:
     else:
       cmd = ["lessc", fn, css_output, "--verbose"]
 
+    print "[less2css] Converting "+fn+" to "+css_output
+
     #run compiler
     p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
 
