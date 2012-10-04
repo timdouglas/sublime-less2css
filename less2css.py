@@ -20,13 +20,22 @@ class LessToCss:
 
     window = sublime.active_window()
     proj_folders = window.folders()
+    default = proj_folders
+
+    if len(proj_folders) >= 1:
+      default = proj_folders[0]
+    else:
+      default = ""
 
     settings = sublime.load_settings('less2css.sublime-settings')
-    output_dir = settings.get("outputDir", proj_folders[0])
+    output_dir = settings.get("outputDir", default)
     minimised = settings.get("minify", True)
 
-    #".split(x)[1]" returns the file.css part of the /whole/path/
-    css_output = os.path.join(output_dir, os.path.split(fn_css)[1])
+    if default != "":
+      #".split(x)[1]" returns the file.css part of the /whole/path/
+      css_output = os.path.join(output_dir, os.path.split(fn_css)[1])
+    else:
+      css_output = fn_css
 
     if minimised == True:
       cmd = ["lessc", fn, css_output, "-x", "--verbose"]
