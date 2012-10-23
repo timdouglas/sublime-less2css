@@ -16,13 +16,14 @@ class LessToCss:
     else:
       fn = file
 
+    default_output_dir = fn[0:fn.rfind(os.path.sep)]
+
     fn_css = re.sub('\.less', '.css', fn)
 
     window = sublime.active_window()
-    proj_folders = window.folders()
 
     settings = sublime.load_settings('less2css.sublime-settings')
-    output_dir = settings.get("outputDir", proj_folders[0])
+    output_dir = settings.get("outputDir", default_output_dir)
     minimised = settings.get("minify", True)
 
     #".split(x)[1]" returns the file.css part of the /whole/path/
