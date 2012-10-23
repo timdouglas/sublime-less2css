@@ -20,8 +20,6 @@ class LessToCss:
 
     fn_css = re.sub('\.less', '.css', fn)
 
-    window = sublime.active_window()
-
     settings = sublime.load_settings('less2css.sublime-settings')
     output_dir = settings.get("outputDir", default_output_dir)
     minimised = settings.get("minify", True)
