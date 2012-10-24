@@ -1,5 +1,6 @@
 import sublime, sublime_plugin
 import subprocess
+import platform
 import re
 import os
 
@@ -33,6 +34,13 @@ class LessToCss:
       cmd = ["lessc", fn, css_output, "--verbose"]
 
     print "[less2css] Converting "+fn+" to "+css_output
+
+    # set environment
+    env = os.getenv('PATH')
+    #if is not windows, modify system path
+    if platform.system != 'Windows':
+      env = env + ':/usr/local/bin:/usr/local/sbin'
+    os.environ['PATH'] = env
 
     #run compiler
     p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
