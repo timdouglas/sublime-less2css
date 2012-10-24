@@ -38,7 +38,7 @@ class LessToCss:
     # set environment
     env = os.getenv('PATH')
     #if is not windows, modify system path
-    if platform.system != 'Windows':
+    if platform.system() != 'Windows':
       env = env + ':/usr/local/bin:/usr/local/sbin'
     os.environ['PATH'] = env
 
