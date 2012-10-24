@@ -35,25 +35,21 @@ class LessToCss:
 
     print "[less2css] Converting "+fn+" to "+css_output
 
-    # set environment
-    env = os.getenv('PATH')
-    #if is not windows, modify system path
     if platform.system() != 'Windows':
+      # if is not Windows, modify the PATH
+      env = os.getenv('PATH')
       env = env + ':/usr/local/bin:/usr/local/sbin'
-    os.environ['PATH'] = env
+      os.environ['PATH'] = env
+    else:
+      # change command from lessc to lessc.cmd
+      cmd[0] = 'lessc.cmd'
 
     #run compiler
     p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
-
-    while True:
-      try:
-        stdout, stderr = p.communicate()
-      except ValueError:
-        break
-      #remove control characters  
-      out = stderr.decode("ascii")
-      out = re.sub('\033\[[^m]*m', '', out)
-
+    stdout, stderr = p.communicate()
+    #remove control characters  
+    out = stderr.decode("ascii")
+    out = re.sub('\033\[[^m]*m', '', out)
     return out
 
   def convertAll(self):
