@@ -3,5 +3,7 @@
  */
 {
   "lessBaseDir": "./css",
-  "minify": true
+  "minify": true,
+  "autoCompile": true,
+  "showErrorWithWindow": false
 }

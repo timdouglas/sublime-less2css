@@ -16,5 +16,35 @@
         ]
       }
     ]
+  },
+
+  {
+    "id": "preferences",
+    "children":
+    [
+      {
+        "caption": "Package Settings",
+        "id": "package-settings",
+        "children":
+        [
+          {
+            "caption": "Less2Css",
+            "children": 
+            [
+              {
+                  "command": "open_file",
+                  "args": {"file": "${packages}/Less2Css/less2css.sublime-settings"},
+                  "caption": "Settings – Default"
+              },
+              {
+                  "command": "open_file",
+                  "args": {"file": "${packages}/User/less2css.sublime-settings"},
+                  "caption": "Settings – User"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
