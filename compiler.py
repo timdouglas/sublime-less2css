@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sublime, sublime_plugin
 import subprocess, platform, re, os
 
@@ -55,7 +56,7 @@ class Compiler:
     blank_line = re.compile('(^\s+$)|(\033\[[^m]*m)', re.M)
 
     #decode and replace blank lines
-    out = stderr.decode("ascii")
+    out = stderr.decode("utf_8")
     out = blank_line.sub('', out)
 
     if out != '':
