@@ -1,78 +1,23 @@
 import sublime, sublime_plugin
-import subprocess
-import platform
-import re
-import os
 
-#define methods to convert css, either the current file or all
-class LessToCss:
-  def __init__(self, view):
-    self.view = view
+import compiler
 
-  def convertOne(self, file=""):
+#message window
+class MessageWindow:
+  def __init__(self, message = ''):
+    self.show(message)
 
-    #get the current file & its css variant
-    if file == "":
-      fn = self.view.file_name().encode("utf_8")
-    else:
-      fn = file
-
-    default_output_dir = fn[0:fn.rfind(os.path.sep)]
-
-    fn_css = re.sub('\.less', '.css', fn)
+  def show(self, message):
+    if message == '':
+      return
 
     settings = sublime.load_settings('less2css.sublime-settings')
-    output_dir = settings.get("outputDir", default_output_dir)
-    minimised = settings.get("minify", True)
+    show_alert = settings.get("showErrorWithWindow", True)
 
-    #".split(x)[1]" returns the file.css part of the /whole/path/
-    css_output = os.path.join(output_dir, os.path.split(fn_css)[1])
+    if show_alert == False:
+      return
 
-    if minimised == True:
-      cmd = ["lessc", fn, css_output, "-x", "--verbose"]
-    else:
-      cmd = ["lessc", fn, css_output, "--verbose"]
-
-    print "[less2css] Converting "+fn+" to "+css_output
-
-    if platform.system() != 'Windows':
-      # if is not Windows, modify the PATH
-      env = os.getenv('PATH')
-      env = env + ':/usr/local/bin:/usr/local/sbin'
-      os.environ['PATH'] = env
-    else:
-      # change command from lessc to lessc.cmd
-      cmd[0] = 'lessc.cmd'
-
-    #run compiler
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
-    stdout, stderr = p.communicate()
-    #remove control characters  
-    out = stderr.decode("ascii")
-    out = re.sub('\033\[[^m]*m', '', out)
-    return out
-
-  def convertAll(self):
-    err_count = 0;
-
-    settings = sublime.load_settings('less2css.sublime-settings')
-    base = settings.get("lessBaseDir")
-
-    for r,d,f in os.walk(base):
-      for files in f:
-        if files.endswith(".less"):
-          #add path to file name
-          fn = os.path.join(r, files)
-          #call compiler
-          resp = self.convertOne(fn)
-
-          if resp != "":
-            err_count = err_count + 1
-
-    if err_count > 0:
-      return "There were errors compiling all LESS files"
-    else:
-      return ""
+    sublime.error_message(message)
 
 
 ############################
@@ -82,34 +27,32 @@ class LessToCss:
 #single less file
 class LessToCssCommand(sublime_plugin.TextCommand):
   def run(self, text):
-    l2c = LessToCss(self.view)
-    fn = self.view.file_name().encode("utf_8")
-    
-    if fn.find(".less") > -1:
-      sublime.status_message("Compiling .less files...")
-      resp = l2c.convertOne("")
+    l2c = compiler.Compiler(self.view)
+    resp = l2c.convertOne()
+    MessageWindow(resp)
 
-      if resp != "":
-        sublime.error_message(resp)
-      else:
-        sublime.status_message(".less file compiled successfully")
+class AutoLessToCssCommand(sublime_plugin.TextCommand):
+  def run(self, text):
+    l2c = compiler.Compiler(self.view)
+    resp = l2c.convertOne(is_auto_save = True)
+    MessageWindow(resp)
 
 #all less files
 class AllLessToCssCommand(sublime_plugin.TextCommand):
   def run(self, text):
-    l2c = LessToCss(self.view)
+    l2c = compiler.Compiler(self.view)
     sublime.status_message("Compiling .less files...")
     resp = l2c.convertAll()
 
     if resp != "":
-      sublime.error_message(resp)
+      MessageWindow(resp)
     else:
       sublime.message_dialog("All .less files compiled successfully")
 
 #listener to current less file
 class LessToCssSave(sublime_plugin.EventListener):
   def on_post_save(self, view):
-    view.run_command("less_to_css")
+    view.run_command("auto_less_to_css")
 
 #change css base setting
 class SetLessBaseCommand(sublime_plugin.WindowCommand):
