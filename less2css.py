@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 import sublime, sublime_plugin
-
+import os
 import compiler
 
 #message window
