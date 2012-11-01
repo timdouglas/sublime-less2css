@@ -90,7 +90,7 @@ class Compiler:
       cmd[0] = 'lessc.cmd'
 
     #run compiler
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True) #not sure if node outputs on stderr or stdout so capture both
+    p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
     stdout, stderr = p.communicate()
 
     #blank lines and control characters
