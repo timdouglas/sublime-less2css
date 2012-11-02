@@ -9,6 +9,10 @@ class Compiler:
 
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
   def convertOne(self, is_auto_save = False):
+    fn = self.view.file_name().encode("utf_8")
+    if not fn.endswith(".less"):
+      return ''
+
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
@@ -19,7 +23,7 @@ class Compiler:
       return ''
 
     dirs = self.parseBaseDirs(base_dir, output_dir)
-    return self.convertLess2Css(dirs = dirs, minimised = minimised)
+    return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised)
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
@@ -127,12 +131,12 @@ class Compiler:
         break
 
     # normalize less base path
-    if base_dir.startswith('.') or base_dir == '':
+    if not base_dir.startswith('/'):
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
     # normalize css output base path
-    if output_dir.startswith('.'):
+    if not output_dir.startswith('/'):
       output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
-
+    
     return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir }
 
