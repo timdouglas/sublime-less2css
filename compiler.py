@@ -88,13 +88,18 @@ class Compiler:
       env = os.getenv('PATH')
       env = env + ':/usr/local/bin:/usr/local/sbin'
       os.environ['PATH'] = env
+      if subprocess.call(['which', 'lessc']) == 1:
+        return sublime.error_message('less2css error: `lessc` is not available')
     else:
       # change command from lessc to lessc.cmd on Windows,
       # only lessc.cmd works but lessc doesn't
       cmd[0] = 'lessc.cmd'
 
     #run compiler
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
+    try:
+      p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
+    except OSError as err:
+      return sublime.error_message('less2css error: ' + str(err))
     stdout, stderr = p.communicate()
 
     #blank lines and control characters
@@ -111,11 +116,13 @@ class Compiler:
       print '[less2css] Convert completed!'
 
     return out
-  
+
 
   # try to find project folder,
   # and normalize relative paths such as /a/b/c/../d to /a/b/d
-  def parseBaseDirs(self, base_dir = './', output_dir = ''): 
+  def parseBaseDirs(self, base_dir = './', output_dir = ''):
+    base_dir = './' if base_dir is None else base_dir
+    output_dir = '' if output_dir is None else output_dir
     fn = self.view.file_name().encode("utf_8")
     file_dir = os.path.dirname(fn)
 
