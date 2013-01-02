@@ -28,20 +28,20 @@ class MessageWindow:
 #single less file
 class LessToCssCommand(sublime_plugin.TextCommand):
   def run(self, text):
-    l2c = compiler.Compiler(self.view)
+    l2c = lesscompiler.Compiler(self.view)
     resp = l2c.convertOne()
     MessageWindow(resp)
 
 class AutoLessToCssCommand(sublime_plugin.TextCommand):
   def run(self, text):
-    l2c = compiler.Compiler(self.view)
+    l2c = lesscompiler.Compiler(self.view)
     resp = l2c.convertOne(is_auto_save = True)
     MessageWindow(resp)
 
 #all less files
 class AllLessToCssCommand(sublime_plugin.TextCommand):
   def run(self, text):
-    l2c = compiler.Compiler(self.view)
+    l2c = lesscompiler.Compiler(self.view)
     sublime.status_message("Compiling .less files...")
     resp = l2c.convertAll()
 
