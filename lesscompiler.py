@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sublime, sublime_plugin
-import subprocess, platform, re, os
+import subprocess, platform, re, os, json
+import lessproject
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -15,14 +16,24 @@ class Compiler:
 
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
-    output_dir = settings.get("outputDir")
     minimised = settings.get("minify", True)
     auto_compile = settings.get("autoCompile", True)
+
+    #check project for outputDir first
+    less_proj = lessproject.LessProject()
+    output_dir = less_proj.getProjectLessOutputDir()
+    #project output dir explicitly set, so don't try to normalise to it
+    bypass_project = True
+
+    if output_dir == None:
+      output_dir = settings.get("outputDir")
+      bypass_project = False
 
     if auto_compile == False and is_auto_save == True:
       return ''
 
-    dirs = self.parseBaseDirs(base_dir, output_dir)
+    dirs = self.parseBaseDirs(base_dir, output_dir, bypass_project)
+
     return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised)
 
   # for command 'AllLessToCssCommand'
@@ -32,10 +43,19 @@ class Compiler:
     #default_base
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
-    output_dir = settings.get("outputDir")
     minimised = settings.get("minify", True)
 
-    dirs = self.parseBaseDirs(base_dir, output_dir)
+    #check project for outputDir first
+    less_proj = lessproject.LessProject()
+    output_dir = less_proj.getProjectLessOutputDir()
+    #project output dir explicitly set, so don't try to normalise to it
+    bypass_project = True
+
+    if output_dir == None:
+      output_dir = settings.get("outputDir")
+      bypass_project = False
+
+    dirs = self.parseBaseDirs(base_dir, output_dir, bypass_project)
 
     for r,d,f in os.walk(dirs['less']):
       for files in f:
@@ -68,11 +88,16 @@ class Compiler:
       return ''
 
     css = re.sub('\.less$', '.css', less)
-    sub_path = css.replace(dirs['less'] + os.path.sep, '')
-    css = os.path.join(dirs['css'], sub_path)
+
+    #if user has not explicitly set an output path on the project
+    #save relative to project root    
+    if dirs['explicit'] == False:
+      sub_path = css.replace(dirs['less'] + os.path.sep, '')
+      css = os.path.join(dirs['css'], sub_path)
 
     # create directories
     output_dir = os.path.dirname(css)
+
     if not os.path.isdir(output_dir):
       os.makedirs(output_dir)
 
@@ -120,7 +145,7 @@ class Compiler:
 
   # try to find project folder,
   # and normalize relative paths such as /a/b/c/../d to /a/b/d
-  def parseBaseDirs(self, base_dir = './', output_dir = ''):
+  def parseBaseDirs(self, base_dir = './', output_dir = '', bypass_project = False):
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
     fn = self.view.file_name().encode("utf_8")
@@ -142,8 +167,10 @@ class Compiler:
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
     # normalize css output base path
-    if not output_dir.startswith('/'):
+    if not output_dir.startswith('/') and bypass_project == False:
       output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
+    else: 
+      if not output_dir.startswith('/') and bypass_project == True:
+        output_dir = os.path.normpath(output_dir)
     
-    return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir }
-
+    return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir, 'explicit': bypass_project }
