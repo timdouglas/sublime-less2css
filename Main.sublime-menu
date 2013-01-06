@@ -9,17 +9,10 @@
         "children":
         [
           { "command": "set_less_base", "caption": "Set less base directory"},
+          { "command": "set_output_dir", "caption": "Set css output directory"},
           { "command": "toggle_css_minification", "caption": "Toggle minify output css"},
           { "command": "less_to_css", "caption": "Compile this less file to css"},
-          { "command": "all_less_to_css", "caption": "Compile all less in less base directory to css" },
-          {
-            "caption": "Set CSS Output Directory",
-            "children":
-            [
-              { "command": "set_output_dir", "caption": "Globally"},
-              { "command": "set_output_dir_project", "caption": "For this project only"}
-            ]
-          }
+          { "command": "all_less_to_css", "caption": "Compile all less in less base directory to css" }
         ]
       }
     ]

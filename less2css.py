@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sublime, sublime_plugin
 import os
-import lesscompiler, lessproject
+import lesscompiler
 
 #message window
 class MessageWindow:
@@ -73,7 +73,6 @@ class SetLessBaseCommand(sublime_plugin.WindowCommand):
     else:
       sublime.error_message("Entered directory does not exist")
 
-#set global output directory command
 class SetOutputDirCommand(sublime_plugin.WindowCommand):
   def run(self):
     self.window.show_input_panel("Enter CSS Output Directory: ", "", lambda s: self.set_output_dir(s), None, None)
@@ -88,23 +87,6 @@ class SetOutputDirCommand(sublime_plugin.WindowCommand):
       sublime.save_settings(settings_base)
 
       sublime.status_message("Output directory updated")
-    else:
-      sublime.error_message("Entered directory does not exist")
-
-#set project-only output directory command
-class SetOutputDirProjectCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    self.window.show_input_panel("Enter CSS Output Directory: ", "", lambda s: self.set_output_dir(s), None, None)
-
-  def set_output_dir(self, text):
-    if os.path.isdir(text):
-      proj = lessproject.LessProject()
-
-      if proj.setProjectLessOutputDir(text) == True:
-        sublime.status_message("Output directory updated")
-      else:
-        sublime.error_message("Could not update project settings")
-        
     else:
       sublime.error_message("Entered directory does not exist")
 
