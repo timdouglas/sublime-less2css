@@ -1,7 +1,6 @@
 # sublime-less2css
 
 Sublime Text 2 Plugin to compile less files to css on save
-Requires lessc installed on PATH
 
 # Features
 
@@ -25,8 +24,8 @@ Less2Css requires lessc to compile less to css.
 ### Mac OS X / Linux(Ubuntu/Debian…)
 
 1. Install [NodeJS](http://nodejs.org)
-2. Install npm([NodeJS Package Manager](https://npmjs.org/doc/README.html))
-3. Install less
+2. Install npm ([NodeJS Package Manager](https://npmjs.org/doc/README.html))
+3. Install [less](http://lesscss.org)
 
 ## 
     npm install less -gd
@@ -38,3 +37,16 @@ Less2Css requires lessc to compile less to css.
 2. Add the path of your less.js-windows to PATH environment variable([How to?](http://msdn.microsoft.com/en-us/library/ee537574.aspx)).
 
 [中文版详细安装教程](http://fdream.net/blog/article/783.aspx)
+
+# Credits
+
+Huge thanks to everyone who has contributed to the plugin:
+
+  - xushengs
+  - oklai
+  - NickWoodhams
+  - n1k0
+
+Massive thanks has to go to the team behind the [SideBarEnhancements](https://github.com/titoBouzout/SideBarEnhancements) project who solved the inability to set project-specific settings
+
+And of coure thanks to Alexis Sellier for creating less in the first place!
