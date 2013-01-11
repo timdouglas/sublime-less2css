@@ -61,9 +61,24 @@ class LessProject:
     project = self.getProjectFile()
 
     if not project:
+      print '[less2css] Project file not found'
       return None
 
-    return json.loads(file(project, 'r').read(), strict=False)
+    #Try these:
+
+    #file = open(project, 'r')
+    #content = json.loads(file, strict=False)
+    #file.close()
+
+    #with open(project, 'r') as file:
+    #  content = json.load(file)
+
+    content = json.loads(file(project, 'r').read(), strict=False)
+
+    print '[less2css] project JSON:'
+    print content
+
+    return content
 
   def getProjectLessOutputDir(self):
     project_json = self.getProjectJson()
