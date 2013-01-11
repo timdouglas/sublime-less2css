@@ -94,6 +94,10 @@ class Compiler:
       # change command from lessc to lessc.cmd on Windows,
       # only lessc.cmd works but lessc doesn't
       cmd[0] = 'lessc.cmd'
+      
+      #different minify flag in less.js-windows
+      if minimised = True:
+        cmd[3] = '-compress'
 
     #run compiler
     try:
