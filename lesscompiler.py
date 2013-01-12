@@ -89,14 +89,14 @@ class Compiler:
       env = env + ':/usr/local/bin:/usr/local/sbin'
       os.environ['PATH'] = env
       if subprocess.call(['which', 'lessc']) == 1:
-        return sublime.error_message('less2css error: `lessc` is not available')
+        return sublime.error_message('less2css error: `lessc` is not avavailable')
     else:
       # change command from lessc to lessc.cmd on Windows,
       # only lessc.cmd works but lessc doesn't
       cmd[0] = 'lessc.cmd'
       
       #different minify flag in less.js-windows
-      if minimised = True:
+      if minimised == True:
         cmd[3] = '-compress'
 
     #run compiler
