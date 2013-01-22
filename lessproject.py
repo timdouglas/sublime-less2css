@@ -86,13 +86,16 @@ class LessProject:
     if not project_json:
       return None
 
-    if 'less2css' not in project_json:
+    if 'settings' not in project_json:
       return None
 
-    if 'outputDir' not in project_json['less2css']:
+    if 'less2css' not in project_json['settings']:
       return None
 
-    return project_json['less2css']['outputDir']
+    if 'outputDir' not in project_json['settings']['less2css']:
+      return None
+
+    return project_json['settings']['less2css']['outputDir']
 
   def setProjectLessOutputDir(self, output_dir):
     project_json = self.getProjectJson()
@@ -100,11 +103,16 @@ class LessProject:
     if not project_json:
       return None
 
-    if "less2css" in project_json:
-      project_json['less2css']['outputDir'] = output_dir
+    if "settings" in project_json:
+      if "less2css" in project_json['settings']:
+        project_json['settings']['less2css']['outputDir'] = output_dir
+      else:
+        project_json['settings']['less2css'] = {}
+        project_json['settings']['less2css']['outputDir'] = output_dir
     else:
-      project_json['less2css'] = {}
-      project_json['less2css']['outputDir'] = output_dir
+      project_json['settings'] = {}
+      project_json['settings']['less2css'] = {}
+      project_json['settings']['less2css']['outputDir'] = output_dir
 
     project_file = self.getProjectFile()
     
