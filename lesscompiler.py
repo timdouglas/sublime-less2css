@@ -101,7 +101,7 @@ class Compiler:
 
     #run compiler
     try:
-      p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
+      p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True) #not sure if node outputs on stderr or stdout so capture both
     except OSError as err:
       return sublime.error_message('less2css error: ' + str(err))
     stdout, stderr = p.communicate()
