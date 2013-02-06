@@ -24,7 +24,7 @@ Less2Css requires lessc to compile less to css.
 
 ### Mac OS X / Linux(Ubuntu/Debian…)
 
-1. Install [NodeJS](http://nodejs.org)
+1. Install [NodeJS](http://nodejs.org) (you may need nodejs-legacy - see [issue #23](https://github.com/timdouglas/sublime-less2css/issues/23))
 2. Install npm([NodeJS Package Manager](https://npmjs.org/doc/README.html))
 3. Install less
 
