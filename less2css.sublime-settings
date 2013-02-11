@@ -14,5 +14,6 @@
   "outputDir": "./",
   "minify": true,
   "autoCompile": true,
-  "showErrorWithWindow": false
+  "showErrorWithWindow": false,
+  "main_file": false
 }
