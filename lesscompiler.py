@@ -25,7 +25,7 @@ class Compiler:
     
     dirs = self.parseBaseDirs(base_dir, output_dir)
     if main_file:
-      fn = os.path.dirname(fn) +"\\"+ main_file
+      fn = os.path.join(os.path.dirname(fn), main_file)
     return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised)
 
   # for command 'AllLessToCssCommand'
