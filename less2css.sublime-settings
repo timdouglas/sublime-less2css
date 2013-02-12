@@ -15,5 +15,6 @@
   "minify": true,
   "autoCompile": true,
   "showErrorWithWindow": false,
-  "main_file": false
+  "main_file": false,
+  "checkImports": false
 }

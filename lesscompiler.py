@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sublime, sublime_plugin
-import subprocess, platform, re, os
+import subprocess, platform, re, os, types
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -19,6 +19,7 @@ class Compiler:
     minimised = settings.get("minify", True)
     auto_compile = settings.get("autoCompile", True)
     main_file = settings.get("main_file", False)
+    imports = settings.get("checkImports", False)
     
     if auto_compile == False and is_auto_save == True:
       return ''
@@ -29,6 +30,9 @@ class Compiler:
     # this allows you to have one file with lots of @imports
     if main_file:
       fn = os.path.join(os.path.dirname(fn), main_file)
+
+    if imports:
+      return self.convertLessImports(dirs = dirs, file = fn, minimised = minimised)
     
     return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised)
 
@@ -60,8 +64,40 @@ class Compiler:
     else:
       return ''
 
+  def convertLessImports(self, dirs, file = '', minimised = True):
+    if file == "":
+      fn = self.view.file_name().encode("utf_8")
+    else:
+      fn = file
 
-  # do convert
+    fn = os.path.split(fn)[1]
+
+    proj_folders = proj_folders = dirs['project']
+
+    if not proj_folders:
+      window = sublime.active_window()
+      proj_folders = window.folders()
+
+    nodir = self.getExcludedDirs(self.view)
+
+    term = '@import "'+fn+'";'
+
+    files = []
+
+    if isinstance(proj_folders, types.ListType):
+      for dir in proj_folders:
+        resp = self.doGrep(term, dir, nodir)
+    else:
+      resp = self.doGrep(term, proj_folders, nodir)
+
+      for f,n in resp:
+        print "[less2css] Converting @import container "+f
+        files.append(f)
+
+    files.append(fn)
+    return self.convertLess2Css(dirs, files, minimised)
+
+  # convert single or subset of files
   def convertLess2Css(self, dirs, file = '', minimised = True):
     out = ''
 
@@ -71,6 +107,16 @@ class Compiler:
     else:
       less = file
 
+    if isinstance(less, types.ListType):
+      out = ''
+      for l in less:
+        out += self.doConvertLess2Css(dirs, l, minimised)
+      return out
+    else:
+      return self.doConvertLess2Css(dirs, less, minimised)
+
+  # do convert
+  def doConvertLess2Css(self, dirs, less = '', minimised = True):
     if not less.endswith(".less"):
       return ''
 
@@ -128,6 +174,9 @@ class Compiler:
 
     return out
 
+  #############
+  ### UTILS ###
+  #############
 
   # try to find project folder,
   # and normalize relative paths such as /a/b/c/../d to /a/b/d
@@ -158,3 +207,42 @@ class Compiler:
     
     return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir }
 
+  #search for imports - stolen from my go2function plugin & adapted
+  def doGrep(self, word, directory, nodir):
+    out = []
+
+    for r,d,f in os.walk(directory):
+      if self.canCheckDir(r, nodir):
+        for files in f:
+          fn = os.path.join(r, files)
+          
+          search = open(fn, "r")
+          lines = search.readlines()
+          
+          for n, line in enumerate(lines):
+            if word in line:
+              out.append((fn, n))
+
+          search.close()
+            
+    return out
+
+  #which dirs don't we want to search?
+  def getExcludedDirs(self, view):
+    #this gets the folder_exclude_patterns from the settings file, not the project file
+    dirs = view.settings().get("folder_exclude_patterns", [".git", ".svn", "CVS", ".hg"]) #some defaults
+    return dirs
+
+  #can we look inside this directory?
+  def canCheckDir(self, dir, excludes):
+    count = 0
+
+    #potentially quite expensive - better way?
+    for no in excludes:
+      if no not in dir:
+        count = count + 1
+
+    if count == len(excludes):
+      return True
+    else:
+      return False
