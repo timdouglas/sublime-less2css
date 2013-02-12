@@ -8,6 +8,8 @@ Sublime Text 2 Plugin to compile less files to css on save
  * Automatically compile less -> css on save when editing a .less file in sublime
  * Reports compilation errors
  * Compile all less files in a directory to css files
+ * Auto-compile less files that @import the current less file
+ * Per-project output paths
  
 NB This plugin requires lessc to be in your execution path 
 
