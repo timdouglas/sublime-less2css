@@ -24,8 +24,12 @@ class Compiler:
       return ''
     
     dirs = self.parseBaseDirs(base_dir, output_dir)
+    
+    # if you've set the main_file (relative to current file), only that file gets compiled
+    # this allows you to have one file with lots of @imports
     if main_file:
       fn = os.path.join(os.path.dirname(fn), main_file)
+    
     return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised)
 
   # for command 'AllLessToCssCommand'
