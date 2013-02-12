@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sublime, sublime_plugin
 import subprocess, platform, re, os, types
+import lessproject
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -15,16 +16,25 @@ class Compiler:
 
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
-    output_dir = settings.get("outputDir")
     minimised = settings.get("minify", True)
     auto_compile = settings.get("autoCompile", True)
     main_file = settings.get("main_file", False)
     imports = settings.get("checkImports", False)
     
+    #check project for outputDir first
+    less_proj = lessproject.LessProject()
+    output_dir = less_proj.getProjectLessOutputDir()
+    #project output dir explicitly set, so don't try to normalise it
+    bypass_project = True
+
+    if output_dir == None:
+      output_dir - settings.get("outputDir")
+      bypass_project = False
+
     if auto_compile == False and is_auto_save == True:
       return ''
     
-    dirs = self.parseBaseDirs(base_dir, output_dir)
+    dirs = self.parseBaseDirs(base_dir, output_dir, bypass_project)
     
     # if you've set the main_file (relative to current file), only that file gets compiled
     # this allows you to have one file with lots of @imports
@@ -43,10 +53,19 @@ class Compiler:
     #default_base
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
-    output_dir = settings.get("outputDir")
     minimised = settings.get("minify", True)
 
-    dirs = self.parseBaseDirs(base_dir, output_dir)
+    #check project for outputDir first
+    less_proj = lessproject.LessProject()
+    output_dir = less_proj.getProjectLessOutputDir()
+    #project output dir explicitly set, so don't try to normalise it
+    bypass_project = True
+
+    if output_dir == None:
+      output_dir - settings.get("outputDir")
+      bypass_project = False
+
+    dirs = self.parseBaseDirs(base_dir, output_dir, bypass_project)
 
     for r,d,f in os.walk(dirs['less']):
       for files in f:
@@ -72,7 +91,7 @@ class Compiler:
 
     fn = os.path.split(fn)[1]
 
-    proj_folders = proj_folders = dirs['project']
+    proj_folders = dirs['project']
 
     if not proj_folders:
       window = sublime.active_window()
@@ -180,7 +199,7 @@ class Compiler:
 
   # try to find project folder,
   # and normalize relative paths such as /a/b/c/../d to /a/b/d
-  def parseBaseDirs(self, base_dir = './', output_dir = ''):
+  def parseBaseDirs(self, base_dir = './', output_dir = '', bypass_project = False):
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
     fn = self.view.file_name().encode("utf_8")
@@ -198,11 +217,11 @@ class Compiler:
         break
 
     # normalize less base path
-    if not base_dir.startswith('/'):
+    if not base_dir.startswith('/') and bypass_project == False:
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
     # normalize css output base path
-    if not output_dir.startswith('/'):
+    if not output_dir.startswith('/') and bypass_project == False:
       output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
     
     return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir }

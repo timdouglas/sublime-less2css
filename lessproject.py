@@ -75,9 +75,6 @@ class LessProject:
 
     content = json.loads(file(project, 'r').read(), strict=False)
 
-    print '[less2css] project JSON:'
-    print content
-
     return content
 
   def getProjectLessOutputDir(self):
