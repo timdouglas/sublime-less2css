@@ -12,6 +12,7 @@
 {
   "lessBaseDir": "./",
   "outputDir": "./",
+  "outputFile": "", //[example.css] if left blank uses same name of .less file
   "minify": true,
   "autoCompile": true,
   "showErrorWithWindow": false,

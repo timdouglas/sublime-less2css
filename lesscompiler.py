@@ -16,6 +16,7 @@ class Compiler:
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
+    output_file = settings.get("outputFile")
     minimised = settings.get("minify", True)
     auto_compile = settings.get("autoCompile", True)
     main_file = settings.get("main_file", False)
@@ -30,7 +31,7 @@ class Compiler:
     if main_file:
       fn = os.path.join(os.path.dirname(fn), main_file)
     
-    return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised)
+    return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised, outputFile = output_file)
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
@@ -40,6 +41,7 @@ class Compiler:
     settings = sublime.load_settings('less2css.sublime-settings')
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
+    output_file = settings.get("outputFile")
     minimised = settings.get("minify", True)
 
     dirs = self.parseBaseDirs(base_dir, output_dir)
@@ -50,7 +52,7 @@ class Compiler:
           #add path to file name
           fn = os.path.join(r, files)
           #call compiler
-          resp = self.convertLess2Css(dirs, file = fn, minimised = minimised)
+          resp = self.convertLess2Css(dirs, file = fn, minimised = minimised, outputFile = output_file)
 
           if resp != "":
             err_count = err_count + 1
@@ -62,7 +64,7 @@ class Compiler:
 
 
   # do convert
-  def convertLess2Css(self, dirs, file = '', minimised = True):
+  def convertLess2Css(self, dirs, file = '', minimised = True, outputFile = ''):
     out = ''
 
     #get the current file & its css variant
@@ -74,7 +76,14 @@ class Compiler:
     if not less.endswith(".less"):
       return ''
 
-    css = re.sub('\.less$', '.css', less)
+    if outputFile != "":
+      if not outputFile.endswith(".css"):
+        css = outputFile + ".css"
+      else:
+        css = outputFile
+    else:
+      css = re.sub('\.less$', '.css', less)
+    
     sub_path = css.replace(dirs['less'] + os.path.sep, '')
     css = os.path.join(dirs['css'], sub_path)
 
