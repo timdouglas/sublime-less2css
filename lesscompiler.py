@@ -99,19 +99,20 @@ class Compiler:
 
     nodir = self.getExcludedDirs(self.view)
 
-    term = '@import "'+fn+'";'
+    terms = ['@import "'+fn+'";', '@import-once "'+fn+'";']
 
     files = []
 
-    if isinstance(proj_folders, types.ListType):
-      for dir in proj_folders:
-        resp = self.doGrep(term, dir, nodir)
-    else:
-      resp = self.doGrep(term, proj_folders, nodir)
+    for term in terms:
+      if isinstance(proj_folders, types.ListType):
+        for dir in proj_folders:
+          resp = self.doGrep(term, dir, nodir)
+      else:
+        resp = self.doGrep(term, proj_folders, nodir)
 
-      for f,n in resp:
-        print "[less2css] Converting @import container "+f
-        files.append(f)
+        for f,n in resp:
+          print "[less2css] Converting @import container "+f
+          files.append(f)
 
     files.append(fn)
     return self.convertLess2Css(dirs, files, minimised)
