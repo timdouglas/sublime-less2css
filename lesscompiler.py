@@ -13,7 +13,8 @@ class Compiler:
     if not fn.endswith(".less"):
       return ''
 
-    settings = sublime.load_settings('less2css.sublime-settings')
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
     output_file = settings.get("outputFile")
@@ -38,7 +39,8 @@ class Compiler:
     err_count = 0;
 
     #default_base
-    settings = sublime.load_settings('less2css.sublime-settings')
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
     output_file = settings.get("outputFile")
@@ -84,7 +86,7 @@ class Compiler:
     else:
       css = re.sub('\.less$', '.css', less)
     
-    sub_path = css.replace(dirs['less'] + os.path.sep, '')
+    sub_path = os.path.basename(css)
     css = os.path.join(dirs['css'], sub_path)
 
     # create directories

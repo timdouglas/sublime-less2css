@@ -12,7 +12,8 @@ class MessageWindow:
     if message == '':
       return
 
-    settings = sublime.load_settings('less2css.sublime-settings')
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
     show_alert = settings.get("showErrorWithWindow", True)
 
     if show_alert == False:
@@ -63,7 +64,8 @@ class SetLessBaseCommand(sublime_plugin.WindowCommand):
   def set_less_setting(self, text):
     settings_base = 'less2css.sublime-settings'
 
-    settings = sublime.load_settings(settings_base)
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings(settings_base))
     
     if os.path.isdir(text):
       settings.set("lessBaseDir", text)
@@ -80,7 +82,8 @@ class SetOutputDirCommand(sublime_plugin.WindowCommand):
   def set_output_dir(self, text):
     settings_base = 'less2css.sublime-settings'
 
-    settings = sublime.load_settings(settings_base)
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings(settings_base))
     
     if os.path.isdir(text):
       settings.set("outputDir", text)
@@ -103,7 +106,8 @@ class toggleCssMinificationCommand(sublime_plugin.WindowCommand):
       minify_flag = True
 
     settings_base = 'less2css.sublime-settings'
-    settings = sublime.load_settings(settings_base)
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings(settings_base))
 
     if minify == -1:
       #input was cancelled, don't change
