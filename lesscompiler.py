@@ -9,7 +9,7 @@ class Compiler:
 
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
   def convertOne(self, is_auto_save = False):
-    fn = self.view.file_name().encode("utf_8")
+    fn = self.view.file_name()
     if not fn.endswith(".less"):
       return ''
 
@@ -97,7 +97,7 @@ class Compiler:
     else:
       cmd = ["lessc", less, css, "--verbose"]
 
-    print "[less2css] Converting " + less + " to "+ css
+    print("[less2css] Converting", less, "to", css)
 
     if platform.system() != 'Windows':
       # if is not Windows, modify the PATH
@@ -130,10 +130,10 @@ class Compiler:
     out = blank_line_re.sub('', out)
 
     if out != '':
-      print '----[less2cc] Compile Error----'
-      print out
+      print('----[less2cc] Compile Error----')
+      print(out)
     else:
-      print '[less2css] Convert completed!'
+      print('[less2css] Convert completed!')
 
     return out
 
@@ -143,7 +143,7 @@ class Compiler:
   def parseBaseDirs(self, base_dir = './', output_dir = ''):
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
-    fn = self.view.file_name().encode("utf_8")
+    fn = self.view.file_name()
     file_dir = os.path.dirname(fn)
 
     # find project path
