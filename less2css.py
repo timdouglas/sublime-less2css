@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sublime, sublime_plugin
 import os
-import lesscompiler
+from . import lesscompiler
 
 #message window
 class MessageWindow:
