@@ -85,10 +85,13 @@ class Compiler:
         css = outputFile
     else:
       css = re.sub('\.less$', '.css', less)
-    
-    sub_path = os.path.basename(css)
-    css = os.path.join(dirs['css'], sub_path)
 
+    if (dirs['same_dir']):
+      dirs['css'] = os.path.dirname(less)
+
+    sub_path = os.path.basename(css) # css file name
+    css = os.path.join(dirs['css'], sub_path)
+    
     # create directories
     output_dir = os.path.dirname(css)
     if not os.path.isdir(output_dir):
@@ -147,13 +150,14 @@ class Compiler:
     output_dir = '' if output_dir is None else output_dir
     fn = self.view.file_name().encode("utf_8")
     file_dir = os.path.dirname(fn)
-
+    
     # find project path
     # it seems that there is no shortcuts to get the active project folder,
     # it returns all, so need to find the active one
     proj_dir = ''
     window = sublime.active_window()
     proj_folders = window.folders()
+    
     for folder in proj_folders:
       if fn.startswith(folder):
         proj_dir = folder
@@ -163,9 +167,14 @@ class Compiler:
     if not base_dir.startswith('/'):
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
+    if output_dir == '' or output_dir == './':
+      same_dir = True
+    else:
+      same_dir = False
+
     # normalize css output base path
     if not output_dir.startswith('/'):
       output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
-    
-    return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir }
+
+    return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir, 'same_dir' : same_dir }
 
