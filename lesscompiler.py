@@ -107,23 +107,26 @@ class Compiler:
     else:
       cmd = [lessc_command, less, css, "--verbose"]
 
+    platform_name = platform.system();
+
+    if platform_name == 'Windows' and minimised == True:
+      cmd[3] = '-compress'
+
     print "[less2css] Converting " + less + " to "+ css
 
-    if platform.system() != 'Windows':
-      # if is not Windows, modify the PATH
-      env = os.getenv('PATH')
-      env = env + ':/usr/local/bin:/usr/local/sbin'
-      os.environ['PATH'] = env
-      if lessc_command == "lessc" and subprocess.call(['which', lessc_command]) == 1:
-        return sublime.error_message('less2css error: `lessc` is not avavailable')
-    else:
-      # change command from lessc to lessc.cmd on Windows,
-      # only lessc.cmd works but lessc doesn't
-      cmd[0] = 'lessc.cmd'
+    if lessc_command == "lessc":
+      if platform.system() != 'Windows':
+        # if is not Windows, modify the PATH
+        env = os.getenv('PATH')
+        env = env + ':/usr/local/bin:/usr/local/sbin'
+        os.environ['PATH'] = env
 
-      #different minify flag in less.js-windows
-      if minimised == True:
-        cmd[3] = '-compress'
+        if subprocess.call(['which', lessc_command]) == 1:
+          return sublime.error_message('less2css error: `lessc` is not avavailable')
+      else:
+        # change command from lessc to lessc.cmd on Windows,
+        # only lessc.cmd works but lessc doesn't
+        cmd[0] = 'lessc.cmd'
 
     #run compiler
     try:
