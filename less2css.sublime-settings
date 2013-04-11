@@ -1,15 +1,16 @@
 /*
  * Less2Css default settings
- * 
+ *
  * ******** IMPORTANT ********
  *
  * DO NOT modify this file,
  * Copy the content to user settings
  * via "Preferences" -> "Package Settings" -> "Less2Css" -> "Settings - User".
- * 
+ *
  */
- 
+
 {
+  "lesscCommand": false,
   "lessBaseDir": "./",
   "outputDir": "./",
   "outputFile": "", //[example.css] if left blank uses same name of .less file
