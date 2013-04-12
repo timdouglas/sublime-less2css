@@ -15,24 +15,25 @@ class Compiler:
 
     settings = sublime.active_window().active_view().settings() \
       .get("less2css", sublime.load_settings('less2css.sublime-settings'))
+    lessc_command = settings.get("lesscCommand")
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
     output_file = settings.get("outputFile")
     minimised = settings.get("minify", True)
     auto_compile = settings.get("autoCompile", True)
     main_file = settings.get("main_file", False)
-    
+
     if auto_compile == False and is_auto_save == True:
       return ''
-    
+
     dirs = self.parseBaseDirs(base_dir, output_dir)
-    
+
     # if you've set the main_file (relative to current file), only that file gets compiled
     # this allows you to have one file with lots of @imports
     if main_file:
       fn = os.path.join(os.path.dirname(fn), main_file)
-    
-    return self.convertLess2Css(dirs = dirs, file = fn, minimised = minimised, outputFile = output_file)
+
+    return self.convertLess2Css(lessc_command, dirs = dirs, file = fn, minimised = minimised, outputFile = output_file)
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
@@ -41,6 +42,7 @@ class Compiler:
     #default_base
     settings = sublime.active_window().active_view().settings() \
       .get("less2css", sublime.load_settings('less2css.sublime-settings'))
+    lessc_command = settings.get("lesscCommand")
     base_dir = settings.get("lessBaseDir")
     output_dir = settings.get("outputDir")
     output_file = settings.get("outputFile")
@@ -54,7 +56,7 @@ class Compiler:
           #add path to file name
           fn = os.path.join(r, files)
           #call compiler
-          resp = self.convertLess2Css(dirs, file = fn, minimised = minimised, outputFile = output_file)
+          resp = self.convertLess2Css(lessc_command, dirs, file = fn, minimised = minimised, outputFile = output_file)
 
           if resp != "":
             err_count = err_count + 1
@@ -66,7 +68,7 @@ class Compiler:
 
 
   # do convert
-  def convertLess2Css(self, dirs, file = '', minimised = True, outputFile = ''):
+  def convertLess2Css(self, lessc_command, dirs, file = '', minimised = True, outputFile = ''):
     out = ''
 
     #get the current file & its css variant
@@ -91,34 +93,40 @@ class Compiler:
 
     sub_path = os.path.basename(css) # css file name
     css = os.path.join(dirs['css'], sub_path)
-    
+
     # create directories
     output_dir = os.path.dirname(css)
     if not os.path.isdir(output_dir):
       os.makedirs(output_dir)
 
+    if lessc_command == False:
+      lessc_command = "lessc"
+
     if minimised == True:
-      cmd = ["lessc", less, css, "-x", "--verbose"]
+      cmd = [lessc_command, less, css, "-x", "--verbose"]
     else:
-      cmd = ["lessc", less, css, "--verbose"]
+      cmd = [lessc_command, less, css, "--verbose"]
+
+    platform_name = platform.system();
+
+    if platform_name == 'Windows' and minimised == True:
+      cmd[3] = '-compress'
 
     print "[less2css] Converting " + less + " to "+ css
 
-    if platform.system() != 'Windows':
-      # if is not Windows, modify the PATH
-      env = os.getenv('PATH')
-      env = env + ':/usr/local/bin:/usr/local/sbin'
-      os.environ['PATH'] = env
-      if subprocess.call(['which', 'lessc']) == 1:
-        return sublime.error_message('less2css error: `lessc` is not avavailable')
-    else:
-      # change command from lessc to lessc.cmd on Windows,
-      # only lessc.cmd works but lessc doesn't
-      cmd[0] = 'lessc.cmd'
-      
-      #different minify flag in less.js-windows
-      if minimised == True:
-        cmd[3] = '-compress'
+    if lessc_command == "lessc":
+      if platform.system() != 'Windows':
+        # if is not Windows, modify the PATH
+        env = os.getenv('PATH')
+        env = env + ':/usr/local/bin:/usr/local/sbin'
+        os.environ['PATH'] = env
+
+        if subprocess.call(['which', lessc_command]) == 1:
+          return sublime.error_message('less2css error: `lessc` is not avavailable')
+      else:
+        # change command from lessc to lessc.cmd on Windows,
+        # only lessc.cmd works but lessc doesn't
+        cmd[0] = 'lessc.cmd'
 
     #run compiler
     try:
@@ -150,14 +158,14 @@ class Compiler:
     output_dir = '' if output_dir is None else output_dir
     fn = self.view.file_name().encode("utf_8")
     file_dir = os.path.dirname(fn)
-    
+
     # find project path
     # it seems that there is no shortcuts to get the active project folder,
     # it returns all, so need to find the active one
     proj_dir = ''
     window = sublime.active_window()
     proj_folders = window.folders()
-    
+
     for folder in proj_folders:
       if fn.startswith(folder):
         proj_dir = folder
