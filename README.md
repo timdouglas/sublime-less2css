@@ -1,14 +1,4 @@
-# sublime-less2css with 'auto' basedir
-
-_**This is a fork of the original sublime-less2css project with added 'auto' functionality**_
-
-_Set `outputDir` to `auto` to let the plugin automatically find the correct outputDir._
-
-_For example, if your folder structure is `/project/assets/css/less` it will save it in `/project/assets/css/`.
-If your structure looks like this: `/project/assets/less` and you have a `css` folder in your `assets` folder, 
-it will save it there._
-
-
+# sublime-less2css
 
 Sublime Text 2 Plugin to compile less files to css on save
 Requires lessc installed on PATH
