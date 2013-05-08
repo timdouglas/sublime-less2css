@@ -197,14 +197,14 @@ class Compiler:
     if not base_dir.startswith('/'):
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
-    # normalize css output base path
-    if not output_dir.startswith('/'):
-      output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
-
     if output_dir == '' or output_dir == './':
       same_dir = True
     else:
       same_dir = False
+      
+    # normalize css output base path
+    if not output_dir.startswith('/'):
+      output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
 
     return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir, 'same_dir' : same_dir }
 
