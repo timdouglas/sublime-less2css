@@ -71,7 +71,7 @@ class Compiler:
   def convertLess2Css(self, lessc_command, dirs, file = '', minimised = True, outputFile = ''):
     out = ''
 
-    #get the current file & its css variant
+    # get the current file & its css variant
     if file == "":
       less = self.view.file_name().encode("utf_8")
     else:
@@ -159,6 +159,28 @@ class Compiler:
     fn = self.view.file_name().encode("utf_8")
     file_dir = os.path.dirname(fn)
 
+
+    # if output_dir is set to auto, try to find appropriate destination
+
+    if output_dir == 'auto':
+      current = os.path.split(file_dir)
+      parent = os.path.split(current[0])
+
+      #current[0] here will be the parrent folder, while current[1] is the current folder name
+      #parent[1] will be the parent folder name, while parent[0] is the parent's parent path
+
+      if current[1] == 'less':
+        if parent[1] == 'css':
+          # so the current folder is less and the parent folder is css
+          output_dir = current[0]
+        elif os.path.isdir(os.path.join(current[0],'css')):
+          # so the current folder is less and there is a css folder in the parent folder
+          output_dir = os.path.join(current[0],'css')
+      else:
+        #we tried to automate it but failed
+        output_dir = ''
+
+
     # find project path
     # it seems that there is no shortcuts to get the active project folder,
     # it returns all, so need to find the active one
@@ -175,14 +197,14 @@ class Compiler:
     if not base_dir.startswith('/'):
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
+    # normalize css output base path
+    if not output_dir.startswith('/'):
+      output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
+
     if output_dir == '' or output_dir == './':
       same_dir = True
     else:
       same_dir = False
-
-    # normalize css output base path
-    if not output_dir.startswith('/'):
-      output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
 
     return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir, 'same_dir' : same_dir }
 
