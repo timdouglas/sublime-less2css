@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-import sublime, sublime_plugin
-import subprocess, platform, re, os
+import sublime
+#import sublime_plugin
+import subprocess
+import platform
+import re
+import os
+
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -8,11 +13,13 @@ class Compiler:
     self.view = view
 
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
-  def convertOne(self, is_auto_save = False):
+  def convertOne(self, is_auto_save=False):
+    # check if the filename ends on .less, if not, stop processing the file
     fn = self.view.file_name().encode("utf_8")
     if not fn.endswith(".less"):
       return ''
 
+    # get the user settings for the plugin
     settings = sublime.active_window().active_view().settings() \
       .get("less2css", sublime.load_settings('less2css.sublime-settings'))
     lessc_command = settings.get("lesscCommand")
@@ -23,7 +30,8 @@ class Compiler:
     auto_compile = settings.get("autoCompile", True)
     main_file = settings.get("main_file", False)
 
-    if auto_compile == False and is_auto_save == True:
+    # if this method is called on auto save but auto compile is not enabled, stop processing the file
+    if is_auto_save and not auto_compile:
       return ''
 
     dirs = self.parseBaseDirs(base_dir, output_dir)
@@ -33,13 +41,14 @@ class Compiler:
     if main_file:
       fn = os.path.join(os.path.dirname(fn), main_file)
 
-    return self.convertLess2Css(lessc_command, dirs = dirs, file = fn, minimised = minimised, outputFile = output_file)
+    # compile the LESS file
+    return self.convertLess2Css(lessc_command, dirs=dirs, file=fn, minimised=minimised, outputFile=output_file)
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
-    err_count = 0;
+    err_count = 0
 
-    #default_base
+    # get the plugin settings
     settings = sublime.active_window().active_view().settings() \
       .get("less2css", sublime.load_settings('less2css.sublime-settings'))
     lessc_command = settings.get("lesscCommand")
@@ -50,69 +59,86 @@ class Compiler:
 
     dirs = self.parseBaseDirs(base_dir, output_dir)
 
-    for r,d,f in os.walk(dirs['less']):
+    for r, d, f in os.walk(dirs['less']):
+      # loop through all the files in the folder
       for files in f:
+        # only process files ending on .less
         if files.endswith(".less"):
-          #add path to file name
+          # add path to file name
           fn = os.path.join(r, files)
-          #call compiler
-          resp = self.convertLess2Css(lessc_command, dirs, file = fn, minimised = minimised, outputFile = output_file)
-
+          # call compiler
+          resp = self.convertLess2Css(lessc_command, dirs, file=fn, minimised=minimised, outputFile=output_file)
+          # check the result of the compiler, if it isn't empty an error has occured
           if resp != "":
-            err_count = err_count + 1
+            # keep count of the number of files that failed to compile
+            err_count += 1
 
+    # if err_count is more than 0 it means at least 1 error occured while compiling all LESS files
     if err_count > 0:
       return "There were errors compiling all LESS files"
     else:
       return ''
 
-
   # do convert
-  def convertLess2Css(self, lessc_command, dirs, file = '', minimised = True, outputFile = ''):
+  def convertLess2Css(self, lessc_command, dirs, file='', minimised=True, outputFile=''):
     out = ''
 
     # get the current file & its css variant
+    # if no file was specified take the file name if the current view
     if file == "":
       less = self.view.file_name().encode("utf_8")
     else:
       less = file
-
+    # if the file name doesn't end on .less, stop processing it
     if not less.endswith(".less"):
       return ''
 
+    # check if an output file has been specified
     if outputFile != "":
+      # if the outputfile doesn't end on .css make sure that it does by appending .css
       if not outputFile.endswith(".css"):
         css = outputFile + ".css"
       else:
         css = outputFile
     else:
+      # when no output file is specified we take the name of the less file and substitute .less with .css
       css = re.sub('\.less$', '.css', less)
 
+    # Check if the CSS file should be written to the same folder as where the LESS file is
     if (dirs['same_dir']):
+      # set the folder for the CSS file to the same folder as the LESS file
       dirs['css'] = os.path.dirname(less)
-
-    sub_path = os.path.basename(css) # css file name
+    # get the file name of the CSS file, including the extension
+    sub_path = os.path.basename(css)  # css file name
+    # combine the folder for the CSS file with the file name, this will be our target
     css = os.path.join(dirs['css'], sub_path)
 
     # create directories
+    # get the name of the folder where we need to save the CSS file
     output_dir = os.path.dirname(css)
+    # if the folder doesn't exist, create it
     if not os.path.isdir(output_dir):
       os.makedirs(output_dir)
 
-    if lessc_command == False:
+    # if no alternate compiler has been specified, pick the default one
+    if not lessc_command:
       lessc_command = "lessc"
 
-    if minimised == True:
+    # get the name of the platform (ie are we running on windows)
+    platform_name = platform.system()
+    # check if the compiler should create a minified CSS file
+    if minimised:
+      # create the command for calling the compiler
       cmd = [lessc_command, less, css, "-x", "--verbose"]
+      # when running on Windows we need to add an additional parameter to the call
+      if platform_name == 'Windows':
+        cmd[3] = '-compress'
     else:
+      # the call for non minified CSS is the same on all platforms
       cmd = [lessc_command, less, css, "--verbose"]
 
-    platform_name = platform.system();
-
-    if platform_name == 'Windows' and minimised == True:
-      cmd[3] = '-compress'
-
-    print "[less2css] Converting " + less + " to "+ css
+    # inform the user which file we'll be compiling
+    print "[less2css] Converting " + less + " to " + css
 
     if lessc_command == "lessc":
       if platform.system() != 'Windows':
@@ -130,7 +156,7 @@ class Compiler:
 
     #run compiler
     try:
-      p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE) #not sure if node outputs on stderr or stdout so capture both
+      p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # not sure if node outputs on stderr or stdout so capture both
     except OSError as err:
       return sublime.error_message('less2css error: ' + str(err))
     stdout, stderr = p.communicate()
@@ -150,18 +176,15 @@ class Compiler:
 
     return out
 
-
   # try to find project folder,
   # and normalize relative paths such as /a/b/c/../d to /a/b/d
-  def parseBaseDirs(self, base_dir = './', output_dir = ''):
+  def parseBaseDirs(self, base_dir='./', output_dir=''):
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
     fn = self.view.file_name().encode("utf_8")
     file_dir = os.path.dirname(fn)
 
-
     # if output_dir is set to auto, try to find appropriate destination
-
     if output_dir == 'auto':
       current = os.path.split(file_dir)
       parent = os.path.split(current[0])
@@ -173,13 +196,12 @@ class Compiler:
         if parent[1] == 'css':
           # so the current folder is less and the parent folder is css
           output_dir = current[0]
-        elif os.path.isdir(os.path.join(current[0],'css')):
+        elif os.path.isdir(os.path.join(current[0], 'css')):
           # so the current folder is less and there is a css folder in the parent folder
-          output_dir = os.path.join(current[0],'css')
+          output_dir = os.path.join(current[0], 'css')
       else:
         #we tried to automate it but failed
         output_dir = ''
-
 
     # find project path
     # it seems that there is no shortcuts to get the active project folder,
@@ -206,5 +228,4 @@ class Compiler:
     else:
       same_dir = False
 
-    return { 'project': proj_dir, 'less': base_dir, 'css' : output_dir, 'same_dir' : same_dir }
-
+    return {'project': proj_dir, 'less': base_dir, 'css': output_dir, 'same_dir': same_dir}
