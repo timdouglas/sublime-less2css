@@ -60,7 +60,7 @@ Use this setting to specify the folder where the CSS files will be placed. The f
 - empty string or *./*
 Use an empty string or *./* to have the CSS file stored in the same folder as the LESS file.
 - auto
-    * When your LESS files are stored in a folder called *css\less* the compiled CSS files will be placed in the *css* folder. Any files stored in a subfolder of *css\less* will be saved to that same folder, ie: *css\less\common\global.less* will be compiled to *css\less\common\global.css*.
+    * When your LESS files are stored in a folder called *css\less* the compiled CSS files will be placed in the *css* folder. **Be aware:** Any files stored in a subfolder of *css\less* will be saved to that same folder, ie: *css\less\common\global.less* will be compiled to *css\less\common\global.css*.
     * When your LESS files are stored in a folder called *less* and its parent folder has a subfolder named *css* the compiled CSS files will be placed in the *css* folder. ie: *project\less\global.less* will be compiled to *project\css\global.css*.
     * If neither of the two cases above have been met the CSS file will be stored in the same folder as the LESS file is in.
 
