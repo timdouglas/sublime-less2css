@@ -82,6 +82,19 @@ class SetLessBaseCommand(sublime_plugin.WindowCommand):
       sublime.error_message("Entered directory does not exist")
 
 
+# set the css output folder to auto
+class ResetLessBaseAuto(sublime_plugin.WindowCommand):
+  def run(self):
+    settings_base = 'less2css.sublime-settings'
+
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings(settings_base))
+    settings.set("outputDir", "auto")
+    sublime.save_settings(settings_base)
+
+    sublime.status_message("Output directory reset to auto")
+
+
 class SetOutputDirCommand(sublime_plugin.WindowCommand):
   def run(self):
     self.window.show_input_panel("Enter CSS Output Directory: ", "", lambda s: self.set_output_dir(s), None, None)
