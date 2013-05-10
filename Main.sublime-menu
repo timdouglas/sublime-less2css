@@ -1,6 +1,6 @@
 [
   {
-    "id": "project",
+    "id": "tools",
     "children":
     [
       {
@@ -10,7 +10,10 @@
         [
           { "command": "set_less_base", "caption": "Set less base directory"},
           { "command": "set_output_dir", "caption": "Set css output directory"},
+          { "command": "reset_less_base_auto", "caption": "Set css output directory to 'auto'"},
+          { "caption": "-" },
           { "command": "toggle_css_minification", "caption": "Toggle minify output css"},
+          { "caption": "-" },
           { "command": "less_to_css", "caption": "Compile this less file to css"},
           { "command": "all_less_to_css", "caption": "Compile all less in less base directory to css" }
         ]
@@ -29,8 +32,13 @@
         [
           {
             "caption": "Less2Css",
-            "children": 
+            "children":
             [
+              {   "command" : "open_file",
+                  "args": {"file": "${packages}/Less2Css/readme.md"},
+                  "caption": "Read me"
+              },
+              { "caption": "-" },
               {
                   "command": "open_file",
                   "args": {"file": "${packages}/Less2Css/less2css.sublime-settings"},
@@ -41,6 +49,7 @@
                   "args": {"file": "${packages}/User/less2css.sublime-settings"},
                   "caption": "Settings – User"
               },
+              { "caption": "-" },
               {
                   "command": "open_file",
                   "args": {
