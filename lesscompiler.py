@@ -12,6 +12,22 @@ class Compiler:
   def __init__(self, view):
     self.view = view
 
+  def getSettings(self):
+    # get the user settings for the plugin
+    settings = sublime.active_window().active_view().settings() \
+      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
+
+    return {
+        'auto_compile': settings.get("autoCompile", True),
+        'base_dir': settings.get("lessBaseDir"),
+        'ignore_underscored': settings.get("ignorePrefixedFiles", False),
+        'lessc_command': settings.get("lesscCommand"),
+        'main_file': settings.get("main_file", False),
+        'minimised': settings.get("minify", True),
+        'output_dir': settings.get("outputDir"),
+        'output_file': settings.get("outputFile")
+    }
+
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
   def convertOne(self, is_auto_save=False):
     # check if the filename ends on .less, if not, stop processing the file
@@ -20,58 +36,55 @@ class Compiler:
       return ''
 
     # get the user settings for the plugin
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
-    lessc_command = settings.get("lesscCommand")
-    base_dir = settings.get("lessBaseDir")
-    output_dir = settings.get("outputDir")
-    output_file = settings.get("outputFile")
-    minimised = settings.get("minify", True)
-    auto_compile = settings.get("autoCompile", True)
-    main_file = settings.get("main_file", False)
+    settings = self.getSettings()
 
     # if this method is called on auto save but auto compile is not enabled, stop processing the file
-    if is_auto_save and not auto_compile:
+    if (is_auto_save and not settings['auto_compile']):
       return ''
 
-    dirs = self.parseBaseDirs(base_dir, output_dir)
+    # check if files starting with an underscore should be ignored and if the file name starts with an underscore
+    if (settings['ignore_underscored'] and os.path.basename(fn).startswith('_') and is_auto_save):
+      # print a friendly message for the user
+      print "[less2css] '" + fn + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True"
+      return ''
+
+    dirs = self.parseBaseDirs(settings['base_dir'], settings['output_dir'])
 
     # if you've set the main_file (relative to current file), only that file gets compiled
     # this allows you to have one file with lots of @imports
-    if main_file:
-      fn = os.path.join(os.path.dirname(fn), main_file)
+    if settings['main_file']:
+      fn = os.path.join(os.path.dirname(fn), settings['main_file'])
 
     # compile the LESS file
-    return self.convertLess2Css(lessc_command, dirs=dirs, file=fn, minimised=minimised, outputFile=output_file)
+    return self.convertLess2Css(settings['lessc_command'], dirs=dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'])
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
     err_count = 0
 
     # get the plugin settings
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
-    lessc_command = settings.get("lesscCommand")
-    base_dir = settings.get("lessBaseDir")
-    output_dir = settings.get("outputDir")
-    output_file = settings.get("outputFile")
-    minimised = settings.get("minify", True)
+    settings = self.getSettings()
 
-    dirs = self.parseBaseDirs(base_dir, output_dir)
+    dirs = self.parseBaseDirs(settings['base_dir'], settings['output_dir'])
 
     for r, d, f in os.walk(dirs['less']):
       # loop through all the files in the folder
       for files in f:
         # only process files ending on .less
         if files.endswith(".less"):
-          # add path to file name
-          fn = os.path.join(r, files)
-          # call compiler
-          resp = self.convertLess2Css(lessc_command, dirs, file=fn, minimised=minimised, outputFile=output_file)
-          # check the result of the compiler, if it isn't empty an error has occured
-          if resp != "":
-            # keep count of the number of files that failed to compile
-            err_count += 1
+          # check if files starting with an underscore should be ignored and if the file name starts with an underscore
+          if (settings['ignore_underscored'] and files.startswith('_')):
+            # print a friendly message for the user
+            print "[less2css] '" + os.path.join(r, files) + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True"
+          else:
+            # add path to file name
+            fn = os.path.join(r, files)
+            # call compiler
+            resp = self.convertLess2Css(settings['lessc_command'], dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'])
+            # check the result of the compiler, if it isn't empty an error has occured
+            if resp != "":
+              # keep count of the number of files that failed to compile
+              err_count += 1
 
     # if err_count is more than 0 it means at least 1 error occured while compiling all LESS files
     if err_count > 0:
@@ -212,7 +225,6 @@ class Compiler:
       current = os.path.split(file_dir)
       # parent[1] will be the parent folder name, while parent[0] is the parent's parent path
       parent = os.path.split(current[0])
-      print "current[0] joined with css='" + os.path.join(current[0], 'css') + "'"
       # check if the file is located in a folder called less
       if current[1] == 'less':
         # check if the less folder is located in a folder called css
