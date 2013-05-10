@@ -1,10 +1,9 @@
 # sublime-less2css
 
-Sublime Text 2 Plugin to compile less files to css on save
+Sublime Text 2 Plugin to compile less files to css on save.
 Requires lessc installed on PATH
 
 # Features
-
 
  * Automatically compile less -> css on save when editing a .less file in sublime
  * Reports compilation errors
@@ -44,13 +43,13 @@ Less2Css requires lessc to compile less to css.
 The allowed values are *true* and *false*. When this setting is set to *true* the plugin will compile your LESS file each time you save it.
 
 ## lessBaseDir
-This folder is only used when compiling all LESS files at once through *Project \ Less>Css \ Compile all less in less base directory to css*.
+This folder is only used when compiling all LESS files at once through *Tools \ Less>Css \ Compile all less in less base directory to css*.
 
 ## lesscCommand
 This setting can be used to specify a different compiler. When it is left empty the default compiler, named *lessc*, will be used.
 
 ## main_file
-When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Project \ Less>Css \ Compile all less in less base directory to css*.
+When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css*.
 
 ## minify
 The allowed values are *true* and *false*. When this setting is set to *true* the LESS compiler will be instructed to create a minified CSS file.
@@ -67,7 +66,7 @@ Use this setting to specify the folder where the CSS files will be placed. The f
     * If neither of the two cases above have been met the CSS file will be stored in the same folder as the LESS file is in.
 
 ## outputFile
-When you specify an output file, this will be the file name used to compile **all** LESS files to. The content of the file will be overwritten after each compile. When you build all LESS file in the LESS base folder through *Project \ Less>Css \ Compile all less in less base directory to css* you will only have the CSS of the last compiled file! Assign an empty string to have each LESS file compiled to its CSS counterpart, ie: site.less will become site.css.
+When you specify an output file, this will be the file name used to compile **all** LESS files to. The content of the file will be overwritten after each compile. When you build all LESS file in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css* you will only have the CSS of the last compiled file! Assign an empty string to have each LESS file compiled to its CSS counterpart, ie: site.less will become site.css.
 
 ## showErrorWithWindow
 At the moment this parameter does not have any use.
