@@ -47,6 +47,14 @@ This folder is only used when compiling all LESS files at once through *Tools \ 
 ## lesscCommand
 This setting can be used to specify a different compiler. When it is left empty the default compiler, named *lessc*, will be used.
 
+## ignorePrefixedFiles
+The allowed values are *true* and *false*. When this setting is *true* the plugin will not compile files whose file name start with an underscore (_) when:
+
+- saving and *autoCompile* set to *true*
+- building all LESS files through *Tools \ Less>Css \ Compile all less in less base directory to css*.
+
+You can still compile the file through *Tools \ Less>Css \ Compile this less file to css* or the appropriate shortcut.
+
 ## main_file
 When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css*.
 
