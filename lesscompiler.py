@@ -108,6 +108,9 @@ class Compiler:
     if (dirs['same_dir']):
       # set the folder for the CSS file to the same folder as the LESS file
       dirs['css'] = os.path.dirname(less)
+    elif (dirs['shadow_folders']):
+      # replace less in the path with css, this will shadow the less folder structure
+      dirs['css'] = re.sub('less', 'css', os.path.dirname(less))
     # get the file name of the CSS file, including the extension
     sub_path = os.path.basename(css)  # css file name
     # combine the folder for the CSS file with the file name, this will be our target
@@ -190,7 +193,10 @@ class Compiler:
   #   - css (string)         = the normalised folder where the CSS file should be stored
   #   - sameDir (bool)       = True if the CSS file should be written to the same folder as where the
   #                            LESS file is located; otherwise False
+  #   - shadowFolders (bool) = True if the CSS files should follow the same folder structure as the LESS
+  #                            files.
   def parseBaseDirs(self, base_dir='./', output_dir=''):
+    shadow_folders = False
     # make sure we have a base and output dir before we continue. if none were provided
     # we will assign a default
     base_dir = './' if base_dir is None else base_dir
@@ -222,6 +228,9 @@ class Compiler:
       else:
         # we tried to automate it but failed
         output_dir = ''
+    elif output_dir == 'shadow':
+      shadow_folders = True
+      output_dir = re.sub('less', 'css', file_dir)
 
     # find project path
     # you can have multiple folders at the top level in a project but there is no way
@@ -254,4 +263,4 @@ class Compiler:
       output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
 
     # return the object with all the information that is needed to be determine where to leave the CSS file when compiling
-    return {'project': proj_dir, 'less': base_dir, 'css': output_dir, 'same_dir': same_dir}
+    return {'project': proj_dir, 'less': base_dir, 'css': output_dir, 'same_dir': same_dir, 'shadow_folders': shadow_folders}
