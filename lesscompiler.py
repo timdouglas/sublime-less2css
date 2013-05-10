@@ -140,78 +140,102 @@ class Compiler:
     # inform the user which file we'll be compiling
     print "[less2css] Converting " + less + " to " + css
 
+    # check if we're compiling with the default compiler
     if lessc_command == "lessc":
-      if platform.system() != 'Windows':
+      # check if we're on Windows
+      if platform.system() == 'Windows':
+        # change command from lessc to lessc.cmd on Windows,
+        # only lessc.cmd works but lessc doesn't
+        cmd[0] = 'lessc.cmd'
+      else:
         # if is not Windows, modify the PATH
         env = os.getenv('PATH')
         env = env + ':/usr/local/bin:/usr/local/sbin'
         os.environ['PATH'] = env
-
+        # check for the existance of the less compiler, exit if it can't be located
         if subprocess.call(['which', lessc_command]) == 1:
           return sublime.error_message('less2css error: `lessc` is not avavailable')
-      else:
-        # change command from lessc to lessc.cmd on Windows,
-        # only lessc.cmd works but lessc doesn't
-        cmd[0] = 'lessc.cmd'
 
-    #run compiler
+    #run compiler, catch an errors that might come up
     try:
-      p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # not sure if node outputs on stderr or stdout so capture both
+      # not sure if node outputs on stderr or stdout so capture both
+      p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except OSError as err:
+      # an error has occured, stop processing the file any further
       return sublime.error_message('less2css error: ' + str(err))
     stdout, stderr = p.communicate()
 
-    #blank lines and control characters
+    # create a regex to match all blank lines and control characters
     blank_line_re = re.compile('(^\s+$)|(\033\[[^m]*m)', re.M)
 
-    #decode and replace blank lines
+    # take the result text returned from node and convert it to UTF-8
     out = stderr.decode("utf_8")
+    # use the regex to replace all blank lines and control characters with an empty string
     out = blank_line_re.sub('', out)
 
-    if out != '':
+    # if out is empty it means the LESS file was succesfuly compiled to CSS, else we will print the error
+    if out == '':
+      print '[less2css] Convert completed!'
+    else:
       print '----[less2cc] Compile Error----'
       print out
-    else:
-      print '[less2css] Convert completed!'
 
     return out
 
-  # try to find project folder,
-  # and normalize relative paths such as /a/b/c/../d to /a/b/d
+  # tries to find the project folder and normalize relative paths
+  # such as /a/b/c/../d to /a/b/d
+  # the resulting object will have the following members:
+  #   - project_dir (string) = the top level folder of the project which houses the current file
+  #   - less (string)        = the normalised folder specified in the base_dir parameter
+  #   - css (string)         = the normalised folder where the CSS file should be stored
+  #   - sameDir (bool)       = True if the CSS file should be written to the same folder as where the
+  #                            LESS file is located; otherwise False
   def parseBaseDirs(self, base_dir='./', output_dir=''):
+    # make sure we have a base and output dir before we continue. if none were provided
+    # we will assign a default
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
+    # get the filename from the current view
     fn = self.view.file_name().encode("utf_8")
+    # get the folder of the current file
     file_dir = os.path.dirname(fn)
 
     # if output_dir is set to auto, try to find appropriate destination
     if output_dir == 'auto':
+      # current[0] here will be the parent folder, while current[1] is the current folder name
       current = os.path.split(file_dir)
+      # parent[1] will be the parent folder name, while parent[0] is the parent's parent path
       parent = os.path.split(current[0])
-
-      #current[0] here will be the parrent folder, while current[1] is the current folder name
-      #parent[1] will be the parent folder name, while parent[0] is the parent's parent path
-
+      print "current[0] joined with css='" + os.path.join(current[0], 'css') + "'"
+      # check if the file is located in a folder called less
       if current[1] == 'less':
+        # check if the less folder is located in a folder called css
         if parent[1] == 'css':
-          # so the current folder is less and the parent folder is css
+          # the current folder is less and the parent folder is css, set the css folder as the output dir
           output_dir = current[0]
         elif os.path.isdir(os.path.join(current[0], 'css')):
-          # so the current folder is less and there is a css folder in the parent folder
+          # the parent folder of less has a folder named css, make this the output dir
           output_dir = os.path.join(current[0], 'css')
+        else:
+          # no conditions have been met, compile the file to the same folder as the less file is in
+          output_dir = ''
       else:
-        #we tried to automate it but failed
+        # we tried to automate it but failed
         output_dir = ''
 
     # find project path
-    # it seems that there is no shortcuts to get the active project folder,
-    # it returns all, so need to find the active one
+    # you can have multiple folders at the top level in a project but there is no way
+    # to get the project folder for the current file. we have to do some work to determine
+    # the current project folder
     proj_dir = ''
     window = sublime.active_window()
+    # this will get us all the top level folders in the project
     proj_folders = window.folders()
-
+    # loop through all the top level folders in the project
     for folder in proj_folders:
+      # we will have found the project folder when it matches with the start of the current file name
       if fn.startswith(folder):
+        # keep the current folder as the project folder
         proj_dir = folder
         break
 
@@ -219,13 +243,15 @@ class Compiler:
     if not base_dir.startswith('/'):
       base_dir = os.path.normpath(os.path.join(proj_dir, base_dir))
 
+    # if the output_dir is empty or set to ./ it means the CSS file should be placed in the same folder as the LESS file
     if output_dir == '' or output_dir == './':
       same_dir = True
     else:
       same_dir = False
-      
+
     # normalize css output base path
     if not output_dir.startswith('/'):
       output_dir = os.path.normpath(os.path.join(proj_dir, output_dir))
 
+    # return the object with all the information that is needed to be determine where to leave the CSS file when compiling
     return {'project': proj_dir, 'less': base_dir, 'css': output_dir, 'same_dir': same_dir}
