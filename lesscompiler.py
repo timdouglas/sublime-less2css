@@ -33,7 +33,7 @@ class Compiler:
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
   def convertOne(self, is_auto_save=False):
     # check if the filename ends on .less, if not, stop processing the file
-    fn = self.view.file_name()
+    fn = self.view.file_name().encode("UTF-8")
     if not fn.endswith(".less"):
       return ''
 
@@ -215,7 +215,7 @@ class Compiler:
     # we will assign a default
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
-    fn = self.view.file_name()
+    fn = self.view.file_name().encode("UTF-8")
     # get the folder of the current file
     file_dir = os.path.dirname(fn)
 
