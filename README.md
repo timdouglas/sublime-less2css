@@ -1,7 +1,7 @@
 # sublime-less2css
 
-Sublime Text 2 Plugin to compile less files to css on save.
-Requires lessc installed on PATH
+Sublime Text 2 and 3 Plugin to compile less files to css on save. Requires lessc installed on PATH.
+
 
 # Features
 
