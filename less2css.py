@@ -2,7 +2,10 @@
 import sublime
 import sublime_plugin
 import os
-from . import lesscompiler
+try:
+  import lesscompiler
+except ImportError:
+  from . import lesscompiler
 
 
 #message window
