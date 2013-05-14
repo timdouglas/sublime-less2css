@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import sublime
 #import sublime_plugin
 import subprocess
@@ -14,8 +15,9 @@ class Compiler:
 
   def getSettings(self):
     # get the user settings for the plugin
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
+    #settings = sublime.active_window().active_view().settings() \
+    #  .get("less2css", sublime.load_settings('less2css.sublime-settings'))
+    settings = sublime.load_settings('less2css.sublime-settings')
 
     return {
         'auto_compile': settings.get("autoCompile", True),
@@ -45,7 +47,7 @@ class Compiler:
     # check if files starting with an underscore should be ignored and if the file name starts with an underscore
     if (settings['ignore_underscored'] and os.path.basename(fn).startswith('_') and is_auto_save):
       # print a friendly message for the user
-      print "[less2css] '" + fn + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True"
+      print("[less2css] '" + fn + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True")
       return ''
 
     dirs = self.parseBaseDirs(settings['base_dir'], settings['output_dir'])
@@ -75,7 +77,7 @@ class Compiler:
           # check if files starting with an underscore should be ignored and if the file name starts with an underscore
           if (settings['ignore_underscored'] and files.startswith('_')):
             # print a friendly message for the user
-            print "[less2css] '" + os.path.join(r, files) + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True"
+            print("[less2css] '" + os.path.join(r, files) + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True")
           else:
             # add path to file name
             fn = os.path.join(r, files)
@@ -153,8 +155,7 @@ class Compiler:
       # the call for non minified CSS is the same on all platforms
       cmd = [lessc_command, less, css, "--verbose"]
 
-    # inform the user which file we'll be compiling
-    print "[less2css] Converting " + less + " to " + css
+    print("[less2css] Converting " + less + " to " + css)
 
     # check if we're compiling with the default compiler
     if lessc_command == "lessc":
@@ -191,10 +192,10 @@ class Compiler:
 
     # if out is empty it means the LESS file was succesfuly compiled to CSS, else we will print the error
     if out == '':
-      print '[less2css] Convert completed!'
+      print('[less2css] Convert completed!')
     else:
-      print '----[less2cc] Compile Error----'
-      print out
+      print('----[less2cc] Compile Error----')
+      print(out)
 
     return out
 
@@ -214,7 +215,6 @@ class Compiler:
     # we will assign a default
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
-    # get the filename from the current view
     fn = self.view.file_name().encode("utf_8")
     # get the folder of the current file
     file_dir = os.path.dirname(fn)
