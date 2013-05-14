@@ -73,8 +73,7 @@ class SetLessBaseCommand(sublime_plugin.WindowCommand):
   def set_less_setting(self, text):
     settings_base = 'less2css.sublime-settings'
 
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings(settings_base))
+    settings = sublime.load_settings("less2css.sublime-settings")
 
     if os.path.isdir(text):
       settings.set("lessBaseDir", text)
@@ -90,8 +89,8 @@ class ResetLessBaseAuto(sublime_plugin.WindowCommand):
   def run(self):
     settings_base = 'less2css.sublime-settings'
 
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings(settings_base))
+    settings = sublime.load_settings("less2css.sublime-settings")
+
     settings.set("outputDir", "auto")
     sublime.save_settings(settings_base)
 
@@ -105,8 +104,7 @@ class SetOutputDirCommand(sublime_plugin.WindowCommand):
   def set_output_dir(self, text):
     settings_base = 'less2css.sublime-settings'
 
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings(settings_base))
+    settings = sublime.load_settings("less2css.sublime-settings")
 
     if os.path.isdir(text):
       settings.set("outputDir", text)
@@ -129,15 +127,13 @@ class toggleCssMinificationCommand(sublime_plugin.WindowCommand):
     if minify == 0:
       minify_flag = True
 
-    settings_base = 'less2css.sublime-settings'
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings(settings_base))
+    settings = sublime.load_settings("less2css.sublime-settings")
 
     if minify == -1:
       #input was cancelled, don't change
       minify_flag = settings.get("minify", True)  # existing or default
 
     settings.set("minify", minify_flag)
-    sublime.save_settings(settings_base)
+    sublime.save_settings("less2css.sublime-settings")
 
     sublime.status_message("Updated minify flag")
