@@ -6,6 +6,7 @@ import subprocess
 import platform
 import re
 import os
+import sys
 
 
 #define methods to convert css, either the current file or all
@@ -33,7 +34,13 @@ class Compiler:
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
   def convertOne(self, is_auto_save=False):
     # check if the filename ends on .less, if not, stop processing the file
-    fn = self.view.file_name().encode("utf_8")
+    fn = self.view.file_name()
+    # in Python 3 all string are Unicode by default, we only have to encode when running on something lower than 3
+    # in addition Windows uses UTF-16 for its file names so we don't encode to UTF-8 on Windows
+    if sys.version_info < (3, 0, 0) and not platform.system() is "Windows":
+      fn = fn.encode("utf_8")
+
+    # it the file isn't a less file we have no don't have to process it any further
     if not fn.endswith(".less"):
       return ''
 
@@ -215,7 +222,12 @@ class Compiler:
     # we will assign a default
     base_dir = './' if base_dir is None else base_dir
     output_dir = '' if output_dir is None else output_dir
-    fn = self.view.file_name().encode("utf_8")
+    fn = self.view.file_name()
+    # in Python 3 all string are Unicode by default, we only have to encode when running on something lower than 3
+    # in addition Windows uses UTF-16 for its file names so we don't encode to UTF-8 on Windows
+    if sys.version_info < (3, 0, 0) and not platform.system() is "Windows":
+      fn = fn.encode("utf_8")
+
     # get the folder of the current file
     file_dir = os.path.dirname(fn)
 
