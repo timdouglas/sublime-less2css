@@ -38,6 +38,8 @@ Less2Css requires lessc to compile less to css.
 [中文版详细安装教程](http://fdream.net/blog/article/783.aspx)
 
 # Configuration
+less2css can be configured on two levels. There are the user settings which you can access through `Preferences\Package Settings\less2css`. These are your global settings. Below you will find a description for all the various settings. The second level where you can configure less2css is at the project level. If you have a Sublime Text project file, it has the extension `.sublime-project`, you can override your user settings for just that project. This will be described at the end of this chapter.
+
 ### autoCompile
 The allowed values are `true` and `false`. When this setting is set to `true` the plugin will compile your LESS file each time you save it.
 
@@ -143,3 +145,36 @@ When you specify an output file, this will be the file name used to compile **al
 
 ### showErrorWithWindow
 At the moment this parameter does not have any use.
+
+# Project settings
+You can use the configuration settings that are described above and apply them to just the project you are working on. In order to do this you need to manually alter the `.sublime-project` file. A default project file looks like this:
+
+	{
+		"folders":
+		[
+			{
+				"path": "<path_to_project_folder"
+			}
+		]
+	}
+
+You can add the less2css settings like this:
+
+	{
+		"folders":
+		[
+			{
+				"path": "<path_to_project_folder"
+			}
+		],
+		"settings":
+		{
+			"less2css":
+			{
+				"autoCompile": false,
+				"minify": false
+			}
+		}
+	}
+
+Now the user settings `autoCompile` and `minify` will be overriden by the project setting.

@@ -8,6 +8,16 @@ import re
 import os
 import sys
 
+# these constants are for the settings of less2css
+SETTING_AUTOCOMPILE = "autoCompile"
+SETTING_LESSBASEDIR = "lessBaseDir"
+SETTING_IGNOREPREFIXEDFILES = "ignorePrefixedFiles"
+SETTING_LESSCCOMMAND = "lesscCommand"
+SETTING_MAINFILE = "main_file"
+SETTING_MINIFY = "minify"
+SETTING_OUTPUTDIR = "outputDir"
+SETTING_OUTPUTFILE = "outputFile"
+
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -16,19 +26,24 @@ class Compiler:
 
   def getSettings(self):
     # get the user settings for the plugin
-    #settings = sublime.active_window().active_view().settings() \
-    #  .get("less2css", sublime.load_settings('less2css.sublime-settings'))
     settings = sublime.load_settings('less2css.sublime-settings')
+    # get the less2css settings from the project file
+    project_settings = sublime.active_window().active_view().settings().get("less2css")
+    if project_settings is None:
+      project_settings = {}
 
+    # we will combine the settings from the project with the user settings. The project settings take precedence over
+    # the user settings. If there is no project specific value for a setting, the user setting will be used. If the user
+    # setting doesn't exist it will use the specified default value for the setting
     return {
-        'auto_compile': settings.get("autoCompile", True),
-        'base_dir': settings.get("lessBaseDir"),
-        'ignore_underscored': settings.get("ignorePrefixedFiles", False),
-        'lessc_command': settings.get("lesscCommand"),
-        'main_file': settings.get("main_file", False),
-        'minimised': settings.get("minify", True),
-        'output_dir': settings.get("outputDir"),
-        'output_file': settings.get("outputFile")
+        'auto_compile': project_settings.get(SETTING_AUTOCOMPILE, settings.get(SETTING_AUTOCOMPILE, True)),
+        'base_dir': project_settings.get(SETTING_LESSBASEDIR, settings.get(SETTING_LESSBASEDIR)),
+        'ignore_underscored': project_settings.get(SETTING_IGNOREPREFIXEDFILES, settings.get(SETTING_IGNOREPREFIXEDFILES, False)),
+        'lessc_command': project_settings.get(SETTING_LESSCCOMMAND, settings.get(SETTING_LESSCCOMMAND)),
+        'main_file': project_settings.get(SETTING_MAINFILE, settings.get(SETTING_MAINFILE, False)),
+        'minimised': project_settings.get(SETTING_MINIFY, settings.get(SETTING_MINIFY, True)),
+        'output_dir': project_settings.get(SETTING_OUTPUTDIR, settings.get(SETTING_OUTPUTDIR)),
+        'output_file': project_settings.get(SETTING_OUTPUTFILE, settings.get(SETTING_OUTPUTFILE))
     }
 
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
