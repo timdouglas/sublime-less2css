@@ -39,18 +39,18 @@ Less2Css requires lessc to compile less to css.
 
 # Configuration
 ## autoCompile
-The allowed values are *true* and *false*. When this setting is set to *true* the plugin will compile your LESS file each time you save it.
+The allowed values are `true` and `false`. When this setting is set to `true` the plugin will compile your LESS file each time you save it.
 
 ## lessBaseDir
-This folder is only used when compiling all LESS files at once through *Tools \ Less>Css \ Compile all less in less base directory to css*. This can be an absolute path or a relative path. A relative path is useful when your projects always use the same structure, like a folder named *less* to keep all your LESS files in. When compiling all files at once it will also process all subfolders under the base folder.
+This folder is only used when compiling all LESS files at once through *Tools \ Less>Css \ Compile all less in less base directory to css*. This can be an absolute path or a relative path. A relative path is useful when your projects always use the same structure, like a folder named `less` to keep all your LESS files in. When compiling all files at once it will also process all subfolders under the base folder.
 
 ## lesscCommand
 This setting can be used to specify a different compiler. When it is left empty the default compiler, named *lessc*, will be used.
 
 ## ignorePrefixedFiles
-The allowed values are *true* and *false*. When this setting is *true* the plugin will not compile files whose file name start with an underscore (_) when:
+The allowed values are `true` and `false`. When this setting is `true` the plugin will not compile files whose file name start with an underscore (`_`) when:
 
-- saving and *autoCompile* set to *true*
+- saving and `autoCompile` set to `true`
 - building all LESS files through *Tools \ Less>Css \ Compile all less in less base directory to css*.
 
 You can still compile the file through *Tools \ Less>Css \ Compile this less file to css* or the appropriate shortcut.
@@ -59,32 +59,30 @@ You can still compile the file through *Tools \ Less>Css \ Compile this less fil
 When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css*.
 
 ## minify
-The allowed values are *true* and *false*. When this setting is set to *true* the LESS compiler will be instructed to create a minified CSS file.
+The allowed values are `true` and `false`. When this setting is set to `true` the LESS compiler will be instructed to create a minified CSS file.
 
 ## outputDir
 Use this setting to specify the folder where the CSS files will be placed. The following values are supported:
 
-### empty string or *./*
-Use an empty string or *./* to have the CSS file stored in the same folder as the LESS file.
+### empty string or `./`
+Use an empty string or `./` to have the CSS file stored in the same folder as the LESS file.
 
 ### absolute path
-Specify an absolute path to the directory where the CSS file should be stored, eg /home/user/projects/site/assets/css
+Specify an absolute path to the directory where the CSS file should be stored, eg. `/home/user/projects/site/assets/css`
 
 ### relative path
-Specify a partial path to the directory where the CSS should be stored, eg ./css. This will store the CSS files in a folder CSS in the root of the project.
+Specify a partial path to the directory where the CSS should be stored, eg. `./css`. This will store the CSS files in a folder CSS in the root of the project.
 
-### auto
-This setting is only recognized when saving or compiling a single file on command. It is **not** applied when building all LESS files through *Tools \ Less>Css \ Compile all less in less base directory to css*.This setting recognizes the following project setups:
+### `auto` setting
+If you set the `outputDir` to `auto`, the plugin will try to automatically determine the folder where the CSS should be compiled to. It works best when you compile a single css file that imports other CSS files. If you work with multiple CSS files within one project that get compiled seperately, consider using the [`shadow`](#shadow-setting) setting instead.
 
-  - When your LESS files are stored in a folder called *css\less* the compiled CSS files will be placed in the *css* folder.
+The `auto` setting recognizes the following project setups:
 
-  **Be aware:** Any files stored in a subfolder of *css\less* will **not** be saved in the *css* folder but in the same folder as its *less* counterpart:
+  - When your LESS files are stored directly in a folder called `css\less` (and not in any subfolders) the compiled CSS files will be placed in the `css` folder.
 
 		[project]
 		    |- [css]
 		    |---- [less]
-		    |-------- [global]
-		    |------------ global.less
 		    |-------- site.less
 
   Will result in the following after compilation:
@@ -92,23 +90,14 @@ This setting is only recognized when saving or compiling a single file on comman
 		[project]
 		    |- [css]
 		    |---- [less]
-		    |-------- [global]
-		    |------------ global.css
-		    |------------ global.less
 		    |-------- site.less
 		    |---- site.css
 
-  - When your LESS files are stored in a folder called *less* and its parent folder has a subfolder named *css* the compiled CSS files will be placed in the *css* folder.
-
-  **Be aware**: It is very important that the *css* folder already exists, else the *css* file will be stored in the same folder als its *less* counterpart.
-
-  **Be aware**: Any files stored in a subfolder of *less* will **not** be saved in the *css* folder but in the same folder as its *less* counterpart:
+  - When your LESS files are stored in a folder called `less` and its parent folder has a subfolder named `css` the compiled CSS files will be placed in the `css` folder.
 
 		[project]
 		    |- [css]
 		    |- [less]
-		    |---- [global]
-		    |-------- global.less
 		    |---- site.less
 
   Will result in the following after compilation:
@@ -117,16 +106,13 @@ This setting is only recognized when saving or compiling a single file on comman
 		    |- [css]
 		    |---- site.css
 		    |- [less]
-		    |---- [global]
-		    |-------- global.css
-		    |-------- global.less
 		    |---- site.less
 
   - If neither of the two cases above have been met the CSS file will be stored in the same folder as the LESS file is in.
 
-### shadow
+### `shadow` setting
 
-When you specify *shadow* it is expected your LESS files are stored in a folder named *less*. Within this folder your are free to create any number of subfolder to organise your LESS files. When you compile a single file or all files through the menu command the string *less* will be replaced with *css* in the file path. For example, if you have this file structure:
+When you specify `shadow` it is expected your LESS files are stored in a folder named `less`. Within this folder your are free to create any number of subfolder to organise your LESS files. When you compile a single file or all files through the menu command the string `less` will be replaced with `css` in the file path. For example, if you have this file structure:
 
 	[project]
 	    |- [less]
