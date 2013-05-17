@@ -35,7 +35,7 @@
             "children":
             [
               {   "command" : "open_file",
-                  "args": {"file": "${packages}/Less2Css/readme.md"},
+                  "args": {"file": "${packages}/Less2Css/README.md"},
                   "caption": "Read me"
               },
               { "caption": "-" },
