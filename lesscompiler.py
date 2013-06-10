@@ -281,6 +281,12 @@ class Compiler:
     proj_folders = window.folders()
     # loop through all the top level folders in the project
     for folder in proj_folders:
+      # there was a problem when fn contains a special char like é. An error would
+      # occur when checking if fn starts with the folder. Converting folder to utf_8
+      # seems to fix this error
+      if sys.version_info < (3, 0, 0) and not platform.system() is 'Windows':
+        print('Had to encode folder with utf_8 to ' + folder)
+        folder = folder.encode('utf_8')
       # we will have found the project folder when it matches with the start of the current file name
       if fn.startswith(folder):
         # keep the current folder as the project folder
