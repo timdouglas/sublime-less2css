@@ -164,6 +164,11 @@ class Compiler:
     if not lessc_command:
       lessc_command = "lessc"
 
+    # by trying it on both OSX and Windows this seems to be the combination that works
+    if sys.version_info < (3, 0, 0) and platform.system() is 'Windows':
+      less = less.encode(sys.getfilesystemencoding())
+      css = css.encode(sys.getfilesystemencoding())
+
     # get the name of the platform (ie are we running on windows)
     platform_name = platform.system()
     # check if the compiler should create a minified CSS file
@@ -240,8 +245,8 @@ class Compiler:
     fn = self.view.file_name()
     # in Python 3 all string are Unicode by default, we only have to encode when running on something lower than 3
     # in addition Windows uses UTF-16 for its file names so we don't encode to UTF-8 on Windows
-    if sys.version_info < (3, 0, 0) and not platform.system() is "Windows":
-      fn = fn.encode("utf_8")
+    if sys.version_info < (3, 0, 0):  # and not platform.system() is "Windows":
+      fn = fn.encode(sys.getfilesystemencoding())
 
     # get the folder of the current file
     file_dir = os.path.dirname(fn)
@@ -284,9 +289,8 @@ class Compiler:
       # there was a problem when fn contains a special char like é. An error would
       # occur when checking if fn starts with the folder. Converting folder to utf_8
       # seems to fix this error
-      if sys.version_info < (3, 0, 0) and not platform.system() is 'Windows':
-        print('Had to encode folder with utf_8 to ' + folder)
-        folder = folder.encode('utf_8')
+      if sys.version_info < (3, 0, 0):  # and not platform.system() is 'Windows':
+        folder = folder.encode(sys.getfilesystemencoding())
       # we will have found the project folder when it matches with the start of the current file name
       if fn.startswith(folder):
         # keep the current folder as the project folder
