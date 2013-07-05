@@ -193,7 +193,7 @@ class Compiler:
         os.environ['PATH'] = env
         # check for the existance of the less compiler, exit if it can't be located
         if subprocess.call(['which', lessc_command]) == 1:
-          return sublime.error_message('less2css error: `lessc` is not avavailable')
+          return sublime.error_message('less2css error: `lessc` is not available')
 
     #run compiler, catch an errors that might come up
     try:
