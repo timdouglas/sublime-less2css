@@ -67,7 +67,7 @@ class Compiler:
       return ''
 
     # check if files starting with an underscore should be ignored and if the file name starts with an underscore
-    if (settings['ignore_underscored'] and os.path.basename(fn).startswith('_') and is_auto_save):
+    if (settings['ignore_underscored'] and os.path.basename(fn).startswith('_') and is_auto_save and not settings['main_file']):
       # print a friendly message for the user
       print("[less2css] '" + fn + "' ignored, file name starts with an underscore and ignorePrefixedFiles is True")
       return ''
