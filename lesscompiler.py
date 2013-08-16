@@ -15,6 +15,7 @@ SETTING_IGNOREPREFIXEDFILES = "ignorePrefixedFiles"
 SETTING_LESSCCOMMAND = "lesscCommand"
 SETTING_MAINFILE = "main_file"
 SETTING_MINIFY = "minify"
+SETTING_MINNAME = "minName"
 SETTING_OUTPUTDIR = "outputDir"
 SETTING_OUTPUTFILE = "outputFile"
 
@@ -42,6 +43,7 @@ class Compiler:
         'lessc_command': project_settings.get(SETTING_LESSCCOMMAND, settings.get(SETTING_LESSCCOMMAND)),
         'main_file': project_settings.get(SETTING_MAINFILE, settings.get(SETTING_MAINFILE, False)),
         'minimised': project_settings.get(SETTING_MINIFY, settings.get(SETTING_MINIFY, True)),
+        'min_name': project_settings.get(SETTING_MINNAME, settings.get(SETTING_MINNAME, True)),
         'output_dir': project_settings.get(SETTING_OUTPUTDIR, settings.get(SETTING_OUTPUTDIR)),
         'output_file': project_settings.get(SETTING_OUTPUTFILE, settings.get(SETTING_OUTPUTFILE))
     }
@@ -120,6 +122,9 @@ class Compiler:
   def convertLess2Css(self, lessc_command, dirs, file='', minimised=True, outputFile=''):
     out = ''
 
+    # get the plugin settings
+    settings = self.getSettings()
+
     # get the current file & its css variant
     # if no file was specified take the file name if the current view
     if file == "":
@@ -139,7 +144,10 @@ class Compiler:
         css = outputFile
     else:
       # when no output file is specified we take the name of the less file and substitute .less with .css
-      css = re.sub('\.less$', '.css', less)
+      if settings['min_name']:
+        css = re.sub('\.less$', '.min.css', less)
+      else:
+        css = re.sub('\.less$', '.css', less)
 
     # Check if the CSS file should be written to the same folder as where the LESS file is
     if (dirs['same_dir']):
