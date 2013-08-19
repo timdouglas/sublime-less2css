@@ -54,8 +54,12 @@ class Compiler:
     fn = self.view.file_name()
     # in Python 3 all string are Unicode by default, we only have to encode when running on something lower than 3
     # in addition Windows uses UTF-16 for its file names so we don't encode to UTF-8 on Windows
-    if sys.version_info < (3, 0, 0) and not platform.system() is "Windows":
-      fn = fn.encode("utf_8")
+    # but in Windows set system locale to Chinese(RPC) defalut filesystem encoding is "mbcs"
+    if sys.version_info < (3, 0, 0):
+      if platform.system() is "Windows":
+        fn = fn.encode(sys.getfilesystemencoding())
+      else:
+        fn = fn.encode("utf_8")
 
     # it the file isn't a less file we have no don't have to process it any further
     if not fn.endswith(".less"):
