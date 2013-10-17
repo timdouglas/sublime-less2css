@@ -144,7 +144,7 @@ It will generate the same structure, only with css as its root folder like:
 When you specify an output file, this will be the file name used to compile **all** LESS files to. The content of the file will be overwritten after each compile. When you build all LESS file in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css* you will only have the CSS of the last compiled file! Assign an empty string to have each LESS file compiled to its CSS counterpart, ie: site.less will become site.css.
 
 ### showErrorWithWindow
-At the moment this parameter does not have any use.
+Set to `true` to see parse errors in a pop up window
 
 # Project settings
 You can use the configuration settings that are described above and apply them to just the project you are working on. In order to do this you need to manually alter the `.sublime-project` file. A default project file looks like this:
