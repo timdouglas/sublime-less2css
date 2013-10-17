@@ -140,7 +140,7 @@ class Compiler:
       return ''
 
     # check if an output file has been specified
-    if outputFile != "":
+    if outputFile != "" and outputFile != None:
       # if the outputfile doesn't end on .css make sure that it does by appending .css
       if not outputFile.endswith(".css"):
         css = outputFile + ".css"

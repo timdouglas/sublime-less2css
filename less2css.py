@@ -7,6 +7,7 @@ try:
 except ImportError:
   from . import lesscompiler
 
+SETTING_SHOW_ALERT = "showErrorWithWindow"
 
 #message window
 class MessageWindow:
@@ -16,10 +17,11 @@ class MessageWindow:
   def show(self, message):
     if message == '':
       return
-
-    settings = sublime.active_window().active_view().settings() \
-      .get("less2css", sublime.load_settings('less2css.sublime-settings'))
-    show_alert = settings.get("showErrorWithWindow", True)
+    settings = sublime.load_settings('less2css.sublime-settings')
+    project_settings = sublime.active_window().active_view().settings().get("less2css")
+    if project_settings is None:
+      project_settings = {}
+    show_alert = project_settings.get(SETTING_SHOW_ALERT, settings.get(SETTING_SHOW_ALERT,True))
 
     if not show_alert:
       return
