@@ -17,7 +17,7 @@
   "minify": true,
   "minName": false,
   "autoCompile": true,
-  "showErrorWithWindow": false,
+  "showErrorWithWindow": true,
   "main_file": false,
   "ignorePrefixedFiles": false
 }
