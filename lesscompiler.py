@@ -201,7 +201,7 @@ class Compiler:
       else:
         # if is not Windows, modify the PATH
         env = os.getenv('PATH')
-        env = env + ':/usr/local/bin:/usr/local/sbin'
+        env = env + ':/usr/bin:/usr/local/bin:/usr/local/sbin'
         os.environ['PATH'] = env
         # check for the existance of the less compiler, exit if it can't be located
         if subprocess.call(['which', lessc_command]) == 1:
