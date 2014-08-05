@@ -63,6 +63,9 @@ When you specify a main file only this file will get compiled when you save any 
 ### minify
 The allowed values are `true` and `false`. When this setting is set to `true` the LESS compiler will be instructed to create a minified CSS file.
 
+### minName
+When the minify setting is set to `true` the LESS compiler will add `.min` to the created minified version of the css files: `default.less` would be compiled to the minified `default.min.css`.
+
 ### outputDir
 Use this setting to specify the folder where the CSS files will be placed. The following values are supported:
 
