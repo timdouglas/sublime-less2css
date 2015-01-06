@@ -29,6 +29,10 @@ Less2Css requires lessc to compile less to css.
 
 	    npm install less -gd
 
+4. Install less-plugin-clean-css
+
+        npm install -g less-plugin-clean-css
+
 
 ### Windows
 

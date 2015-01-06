@@ -181,7 +181,7 @@ class Compiler:
     # check if the compiler should create a minified CSS file
     if minimised:
       # create the command for calling the compiler
-      cmd = [lessc_command, less, css, "-x", "--verbose"]
+      cmd = [lessc_command, less, css, "--clean-css", "--verbose"]
       # when running on Windows we need to add an additional parameter to the call
       if platform_name == 'Windows':
         cmd[3] = '-compress'
