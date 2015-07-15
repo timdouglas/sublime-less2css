@@ -20,7 +20,6 @@ SETTING_OUTPUTDIR = "outputDir"
 SETTING_OUTPUTFILE = "outputFile"
 SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps"
 
-
 #define methods to convert css, either the current file or all
 class Compiler:
   def __init__(self, view):
@@ -190,9 +189,8 @@ class Compiler:
     else:
       # the call for non minified CSS is the same on all platforms
       cmd = [lessc_command, less, css, "--verbose"]
-
     if create_css_source_maps:
-      cmd.append('--source-map')
+            cmd.append('--source-map')
     print("[less2css] Converting " + less + " to " + css)
 
     # check if we're compiling with the default compiler
@@ -205,7 +203,7 @@ class Compiler:
       else:
         # if is not Windows, modify the PATH
         env = os.getenv('PATH')
-        env = env + ':/usr/local/bin:/usr/local/sbin'
+        env = env + ':/usr/bin:/usr/local/bin:/usr/local/sbin'
         os.environ['PATH'] = env
         # check for the existance of the less compiler, exit if it can't be located
         if subprocess.call(['which', lessc_command]) == 1:
