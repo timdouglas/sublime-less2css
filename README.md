@@ -29,7 +29,7 @@ Less2Css requires lessc to compile less to css.
 
 	    npm install less -gd
 
-4. Install less-plugin-clean-css
+4. Optional: To use minification you will need a minifier. Install less-plugin-clean-css or similar.
 
         npm install -g less-plugin-clean-css
 
@@ -65,7 +65,9 @@ You can still compile the file through *Tools \ Less>Css \ Compile this less fil
 When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css*.
 
 ### minify
-The allowed values are `true` and `false`. When this setting is set to `true` the LESS compiler will be instructed to create a minified CSS file.
+Default: True
+The allowed values are `true`/`false` or a string which passes a minification option to lessc (e.g. `--clean-css`).
+When this setting is set to `true` the LESS compiler will be instructed to create a minified CSS file. The recommended less minifier is `npm install -g less-plugin-clean-css` which is a required dependancy when `minify=true`.
 
 ### outputDir
 Use this setting to specify the folder where the CSS files will be placed. The following values are supported:
