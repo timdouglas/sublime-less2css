@@ -178,19 +178,21 @@ class Compiler:
 
     # get the name of the platform (ie are we running on windows)
     platform_name = platform.system()
+
     # check if the compiler should create a minified CSS file
+    _minifier = None
     if bool(minimised):
-      # create the command for calling the compiler
-      cmd = [lessc_command, less, css, "--clean-css", "--verbose"]
-      # when running on Windows we need to add an additional parameter to the call
-      if platform_name == 'Windows':
-        cmd[3] = '--clean-css'
+      _minifier = '--clean-css'
     elif type(minimised) is str:
-      cmd = [lessc_command, less, css, minimised, '--verbose']
+      _minifier = minimised
+
+    if _minifier:
+      # create the command for calling the compiler
+      cmd = [lessc_command, less, css, _minifier, '--verbose']
+      print('[less2css] Using minifier : {}'.format(_minifier))
     else:
       # the call for non minified CSS is the same on all platforms
       cmd = [lessc_command, less, css, "--verbose"]
-
     print("[less2css] Converting " + less + " to " + css)
 
     # check if we're compiling with the default compiler
