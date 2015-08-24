@@ -18,7 +18,7 @@ SETTING_MINIFY = "minify"
 SETTING_MINNAME = "minName"
 SETTING_OUTPUTDIR = "outputDir"
 SETTING_OUTPUTFILE = "outputFile"
-
+SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps"
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -45,7 +45,8 @@ class Compiler:
         'minimised': project_settings.get(SETTING_MINIFY, settings.get(SETTING_MINIFY, True)),
         'min_name': project_settings.get(SETTING_MINNAME, settings.get(SETTING_MINNAME, True)),
         'output_dir': project_settings.get(SETTING_OUTPUTDIR, settings.get(SETTING_OUTPUTDIR)),
-        'output_file': project_settings.get(SETTING_OUTPUTFILE, settings.get(SETTING_OUTPUTFILE))
+        'output_file': project_settings.get(SETTING_OUTPUTFILE, settings.get(SETTING_OUTPUTFILE)),
+        'create_css_source_maps': project_settings.get(SETTING_CREATECSSSOURCEMAPS, settings.get(SETTING_CREATECSSSOURCEMAPS))
     }
 
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
@@ -86,7 +87,7 @@ class Compiler:
       fn = os.path.join(os.path.dirname(fn), settings['main_file'])
 
     # compile the LESS file
-    return self.convertLess2Css(settings['lessc_command'], dirs=dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'])
+    return self.convertLess2Css(settings['lessc_command'], dirs=dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'], create_css_source_maps=settings['create_css_source_maps'])
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
@@ -110,7 +111,7 @@ class Compiler:
             # add path to file name
             fn = os.path.join(r, files)
             # call compiler
-            resp = self.convertLess2Css(settings['lessc_command'], dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'])
+            resp = self.convertLess2Css(settings['lessc_command'], dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'], create_css_source_maps=settings['create_css_source_maps'])
             # check the result of the compiler, if it isn't empty an error has occured
             if resp != "":
               # keep count of the number of files that failed to compile
@@ -123,7 +124,7 @@ class Compiler:
       return ''
 
   # do convert
-  def convertLess2Css(self, lessc_command, dirs, file='', minimised=True, outputFile=''):
+  def convertLess2Css(self, lessc_command, dirs, file='', minimised=True, outputFile='', create_css_source_maps=False):
     out = ''
 
     # get the plugin settings
@@ -193,6 +194,8 @@ class Compiler:
     else:
       # the call for non minified CSS is the same on all platforms
       cmd = [lessc_command, less, css, "--verbose"]
+    if create_css_source_maps:
+            cmd.append('--source-map')
     print("[less2css] Converting " + less + " to " + css)
 
     # check if we're compiling with the default compiler

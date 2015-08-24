@@ -47,6 +47,9 @@ less2css can be configured on two levels. There are the user settings which you 
 ### autoCompile
 The allowed values are `true` and `false`. When this setting is set to `true` the plugin will compile your LESS file each time you save it (otherwise you can compile from Sublime's "Tools" > "Less > Css" > "Compile this file to css" menu item).
 
+### createCssSourceMaps
+When `true` a css source map will be generated.
+
 ### lessBaseDir
 This folder is only used when compiling all LESS files at once through *Tools \ Less>Css \ Compile all less in less base directory to css*. This can be an absolute path or a relative path. A relative path is useful when your projects always use the same structure, like a folder named `less` to keep all your LESS files in. When compiling all files at once it will also process all subfolders under the base folder.
 
