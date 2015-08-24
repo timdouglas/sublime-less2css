@@ -190,7 +190,7 @@ class Compiler:
     if _minifier:
       # create the command for calling the compiler
       cmd = [lessc_command, less, css, _minifier, '--verbose']
-      print('[less2css] Using minifier : {}'.format(_minifier))
+      print('[less2css] Using minifier : '+_minifier)
     else:
       # the call for non minified CSS is the same on all platforms
       cmd = [lessc_command, less, css, "--verbose"]
