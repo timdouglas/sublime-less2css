@@ -11,6 +11,7 @@
 
 {
   "autoCompile": true,
+  "createCssSourceMaps": false,
   "ignorePrefixedFiles": false,
   "lessBaseDir": "./",
   "lesscCommand": false,
