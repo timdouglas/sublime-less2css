@@ -69,6 +69,9 @@ Default: True
 The allowed values are `true`/`false` or a string which passes a minification option to lessc (e.g. `--clean-css`).
 When this setting is set to `true` the LESS compiler will be instructed to create a minified CSS file. The recommended less minifier is `npm install -g less-plugin-clean-css` which is a required dependancy when `minify=true`.
 
+### minName
+When the minify setting is set to `true` the LESS compiler will add `.min` to the created minified version of the css files: `default.less` would be compiled to the minified `default.min.css`.
+
 ### outputDir
 Use this setting to specify the folder where the CSS files will be placed. The following values are supported:
 
