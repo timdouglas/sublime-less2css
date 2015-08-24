@@ -45,7 +45,7 @@ Less2Css requires lessc to compile less to css.
 less2css can be configured on two levels. There are the user settings which you can access through `Preferences\Package Settings\less2css`. These are your global settings. Below you will find a description for all the various settings. The second level where you can configure less2css is at the project level. If you have a Sublime Text project file, it has the extension `.sublime-project`, you can override your user settings for just that project. This will be described at the end of this chapter.
 
 ### autoCompile
-The allowed values are `true` and `false`. When this setting is set to `true` the plugin will compile your LESS file each time you save it.
+The allowed values are `true` and `false`. When this setting is set to `true` the plugin will compile your LESS file each time you save it (otherwise you can compile from Sublime's "Tools" > "Less > Css" > "Compile this file to css" menu item).
 
 ### lessBaseDir
 This folder is only used when compiling all LESS files at once through *Tools \ Less>Css \ Compile all less in less base directory to css*. This can be an absolute path or a relative path. A relative path is useful when your projects always use the same structure, like a folder named `less` to keep all your LESS files in. When compiling all files at once it will also process all subfolders under the base folder.
@@ -62,7 +62,7 @@ The allowed values are `true` and `false`. When this setting is `true` the plugi
 You can still compile the file through *Tools \ Less>Css \ Compile this less file to css* or the appropriate shortcut.
 
 ### main_file
-When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css*.
+When you specify a main file only this file will get compiled when you save any LESS file. This is especially useful if you have one LESS file which imports all your other LESS files. Please note that this setting is only used when compiling a single LESS file and not when compiling all LESS files in the LESS base folder through *Tools \ Less>Css \ Compile all less in less base directory to css*. *Note: If your main file imports other files, the other files must be in the same folder for less2css to automatically compile your main file when editing an imported file.*
 
 ### minify
 Default: True
@@ -75,13 +75,13 @@ When the minify setting is set to `true` the LESS compiler will add `.min` to th
 ### outputDir
 Use this setting to specify the folder where the CSS files will be placed. The following values are supported:
 
-### empty string or `./`
+* Empty string or `./`
 Use an empty string or `./` to have the CSS file stored in the same folder as the LESS file.
 
-#### absolute path
+* Absolute path
 Specify an absolute path to the directory where the CSS file should be stored, eg. `/home/user/projects/site/assets/css`
 
-#### relative path
+* Relative path
 Specify a partial path to the directory where the CSS should be stored, eg. `./css`. This will store the CSS files in a folder CSS in the root of the project.
 
 ### `auto` setting
@@ -123,7 +123,7 @@ The `auto` setting recognizes the following project setups:
 
 ### `shadow` setting
 
-When you specify `shadow` it is expected your LESS files are stored in a folder named `less`. Within this folder your are free to create any number of subfolder to organise your LESS files. When you compile a single file or all files through the menu command the string `less` will be replaced with `css` in the file path. For example, if you have this file structure:
+Use this setting to compile a complete `less` folder into a shadow `css` folder. It is expected your LESS files are stored in a folder named `less`. Within this folder you are free to create any number of subfolder to organise your LESS files. When you compile a single file or all files through the menu command, the string `less` will be replaced with `css` in the file path. For example, if you have this file structure:
 
 	[project]
 	    |- [less]
