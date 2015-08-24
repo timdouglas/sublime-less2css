@@ -182,7 +182,7 @@ class Compiler:
 
     # check if the compiler should create a minified CSS file
     _minifier = None
-    if bool(minimised):
+    if minimised is True:
       _minifier = '--clean-css'
     elif type(minimised) is str:
       _minifier = minimised
