@@ -184,6 +184,8 @@ class Compiler:
     _minifier = None
     if minimised is True:
       _minifier = '--clean-css'
+      if platform.system() == "Windows":
+        _minifier = '-compress'
     elif type(minimised) is str:
       _minifier = minimised
 
