@@ -3,11 +3,11 @@ from __future__ import print_function
 import sublime
 #import sublime_plugin
 import subprocess
-import platform
 import re
 import os
 import sys
 
+IS_WINDOWS = True if sys.platform == 'win32' else False
 # these constants are for the settings of less2css
 SETTING_AUTOCOMPILE = "autoCompile"
 SETTING_LESSBASEDIR = "lessBaseDir"
@@ -57,7 +57,7 @@ class Compiler:
     # in addition Windows uses UTF-16 for its file names so we don't encode to UTF-8 on Windows
     # but in Windows set system locale to Chinese(RPC) defalut filesystem encoding is "mbcs"
     if sys.version_info < (3, 0, 0):
-      if platform.system() is "Windows":
+      if IS_WINDOWS:
         fn = fn.encode(sys.getfilesystemencoding())
       else:
         fn = fn.encode("utf_8")
@@ -177,9 +177,6 @@ class Compiler:
     if not lessc_command:
       lessc_command = "lessc"
 
-    # get the name of the platform (ie are we running on windows)
-    platform_name = platform.system()
-
     # check if the compiler should create a minified CSS file
     _minifier = None
     if minimised is True:
@@ -200,8 +197,7 @@ class Compiler:
 
     # check if we're compiling with the default compiler
     if lessc_command == "lessc":
-      # check if we're on Windows
-      if platform.system() == 'Windows':
+      if IS_WINDOWS:
         # change command from lessc to lessc.cmd on Windows,
         # only lessc.cmd works but lessc doesn't
         cmd[0] = 'lessc.cmd'
@@ -259,7 +255,7 @@ class Compiler:
     fn = self.view.file_name()
     # in Python 3 all string are Unicode by default, we only have to encode when running on something lower than 3
     # in addition Windows uses UTF-16 for its file names so we don't encode to UTF-8 on Windows
-    if sys.version_info < (3, 0, 0) and not platform.system() is "Windows":
+    if sys.version_info < (3, 0, 0) and not IS_WINDOWS:
       fn = fn.encode("utf_8")
 
     # get the folder of the current file
