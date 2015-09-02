@@ -18,7 +18,7 @@ SETTING_MINIFY = "minify"
 SETTING_MINNAME = "minName"
 SETTING_OUTPUTDIR = "outputDir"
 SETTING_OUTPUTFILE = "outputFile"
-SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps",
+SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps"
 SETTING_AUTOPREFIX = "autoprefix"
 
 #define methods to convert css, either the current file or all
