@@ -33,6 +33,10 @@ Less2Css requires lessc to compile less to css.
 
         npm install -g less-plugin-clean-css
 
+5. Optional: To use autoprefix. Install [less-plugin-autoprefix](https://github.com/less/less-plugin-autoprefix).
+
+        npm install -g less-plugin-autoprefix
+
 
 ### Windows
 
@@ -157,6 +161,9 @@ When you specify an output file, this will be the file name used to compile **al
 
 ### showErrorWithWindow
 Set to `true` to see parse errors in a pop up window
+
+### autoprefix
+Set to `true` to add prefixes to css after conversion from less
 
 # Project settings
 You can use the configuration settings that are described above and apply them to just the project you are working on. In order to do this you need to manually alter the `.sublime-project` file. A default project file looks like this:

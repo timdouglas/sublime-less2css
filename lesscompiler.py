@@ -19,6 +19,7 @@ SETTING_MINNAME = "minName"
 SETTING_OUTPUTDIR = "outputDir"
 SETTING_OUTPUTFILE = "outputFile"
 SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps"
+SETTING_AUTOPREFIX = "autoprefix"
 
 #define methods to convert css, either the current file or all
 class Compiler:
@@ -46,7 +47,8 @@ class Compiler:
         'min_name': project_settings.get(SETTING_MINNAME, settings.get(SETTING_MINNAME, True)),
         'output_dir': project_settings.get(SETTING_OUTPUTDIR, settings.get(SETTING_OUTPUTDIR)),
         'output_file': project_settings.get(SETTING_OUTPUTFILE, settings.get(SETTING_OUTPUTFILE)),
-        'create_css_source_maps': project_settings.get(SETTING_CREATECSSSOURCEMAPS, settings.get(SETTING_CREATECSSSOURCEMAPS))
+        'create_css_source_maps': project_settings.get(SETTING_CREATECSSSOURCEMAPS, settings.get(SETTING_CREATECSSSOURCEMAPS)),
+        'autoprefix': project_settings.get(SETTING_AUTOPREFIX, settings.get(SETTING_AUTOPREFIX))
     }
 
   # for command 'LessToCssCommand' and 'AutoLessToCssCommand'
@@ -87,7 +89,7 @@ class Compiler:
       fn = os.path.join(os.path.dirname(fn), settings['main_file'])
 
     # compile the LESS file
-    return self.convertLess2Css(settings['lessc_command'], dirs=dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'], create_css_source_maps=settings['create_css_source_maps'])
+    return self.convertLess2Css(settings['lessc_command'], dirs=dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'], create_css_source_maps=settings['create_css_source_maps'], autoprefix=settings['autoprefix'])
 
   # for command 'AllLessToCssCommand'
   def convertAll(self):
@@ -111,7 +113,7 @@ class Compiler:
             # add path to file name
             fn = os.path.join(r, files)
             # call compiler
-            resp = self.convertLess2Css(settings['lessc_command'], dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'], create_css_source_maps=settings['create_css_source_maps'])
+            resp = self.convertLess2Css(settings['lessc_command'], dirs, file=fn, minimised=settings['minimised'], outputFile=settings['output_file'], create_css_source_maps=settings['create_css_source_maps'], autoprefix=settings['autoprefix'])
             # check the result of the compiler, if it isn't empty an error has occured
             if resp != "":
               # keep count of the number of files that failed to compile
@@ -124,7 +126,7 @@ class Compiler:
       return ''
 
   # do convert
-  def convertLess2Css(self, lessc_command, dirs, file='', minimised=True, outputFile='', create_css_source_maps=False):
+  def convertLess2Css(self, lessc_command, dirs, file='', minimised=True, outputFile='', create_css_source_maps=False, autoprefix=False):
     out = ''
 
     # get the plugin settings
@@ -197,6 +199,10 @@ class Compiler:
     if create_css_source_maps:
             cmd.append('--source-map')
     print("[less2css] Converting " + less + " to " + css)
+
+    if autoprefix:
+      cmd.append('--autoprefix')
+      print('[less2css] add prefixes to ' + css)
 
     # check if we're compiling with the default compiler
     if lessc_command == "lessc":

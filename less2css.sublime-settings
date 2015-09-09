@@ -20,5 +20,6 @@
   "minName": false,
   "outputDir": "./",
   "outputFile": "", //[example.css] if left blank uses same name of .less file
-  "showErrorWithWindow": true
+  "showErrorWithWindow": true,
+  "autoprefix": false
 }
