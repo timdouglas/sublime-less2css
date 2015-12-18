@@ -138,7 +138,6 @@ class Compiler:
             self.settings['lessc_command'],
             dirs=dirs,
             less_file=self.file_name,
-            minimised=self.settings['minimised'],
             outputFile=self.settings['output_file'],
             create_css_source_maps=self.settings['create_css_source_maps']
         )
@@ -176,7 +175,6 @@ class Compiler:
                         self.settings['lessc_command'],
                         dirs,
                         file=fn,
-                        minimised=self.settings['minimised'],
                         outputFile=self.settings['output_file'],
                         create_css_source_maps=self.settings[
                             'create_css_source_maps'
@@ -196,7 +194,7 @@ class Compiler:
         return ''
 
     # do convert
-    def convertLess2Css(self, lessc_command, dirs, less_file='', minimised=True,
+    def convertLess2Css(self, lessc_command, dirs, less_file='',
                           outputFile='', create_css_source_maps=False):
         out = ''
 
@@ -258,10 +256,10 @@ class Compiler:
 
         # check if the compiler should create a minified CSS file
         _minifier = None
-        if minimised is True:
+        if self.settings['minimised'] is True:
             _minifier = '--clean-css'
-        elif type(minimised) is str:
-            _minifier = minimised
+        elif type(self.settings.get('minimised')) is str:
+            _minifier = self.settings.get('minimised', '')
 
         if _minifier:
             # create the command for calling the compiler
