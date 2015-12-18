@@ -73,29 +73,23 @@ class Compiler:
             )
         }
 
+        # Get the filename and encode accordingly.
+        self.file_name = self.view.file_name()
+        if sys.version_info < (3, 0, 0):
+            if IS_WINDOWS:
+                self.file_name = self.file_name.encode(
+                    sys.getfilesystemencoding()
+                )
+            else:
+                self.file_name = self.file_name.encode("utf_8")
+
+
     def convert_one(self, is_auto_save=False):
         """
         Used in the commands 'LessToCssCommand' and 'AutoLessToCssCommand'
         :param is_auto_save:
         :return:
         """
-        # check if the filename ends on .less, if not, stop processing the file
-        fn = self.view.file_name()
-        # in Python 3 all string are Unicode by default, we only have to
-        # encode when running on something lower than 3 in addition Windows uses
-        #  UTF-16 for its file names so we don't encode to UTF-8 on Windows
-        # but in Windows set system locale to Chinese(RPC) defalut filesystem
-        # encoding is "mbcs"
-        if sys.version_info < (3, 0, 0):
-            if IS_WINDOWS:
-                fn = fn.encode(sys.getfilesystemencoding())
-            else:
-             fn = fn.encode("utf_8")
-
-        # it the file isn't a less file we have no don't have to
-        # process it any further
-        if not fn.endswith(".less"):
-            return ''
 
         # if this method is called on auto save but auto compile is not enabled,
         # stop processing the file
@@ -105,11 +99,11 @@ class Compiler:
         # check if files starting with an underscore should be ignored and
         # if the file name starts with an underscore
         if (self.settings['ignore_underscored'] and \
-            os.path.basename(fn).startswith('_') and \
+            os.path.basename(self.file_name).startswith('_') and \
             is_auto_save and not self.settings['main_file']):
             print(
                 "[less2css] {} ignored, file name starts with an underscore "
-                "and ignorePrefixedFiles is True".format(fn)
+                "and ignorePrefixedFiles is True".format(self.file_name)
             )
             return ''
 
@@ -121,13 +115,16 @@ class Compiler:
         # if you've set the main_file (relative to current file), only that file
         # gets compiled this allows you to have one file with lots of @imports
         if self.settings['main_file']:
-            fn = os.path.join(os.path.dirname(fn), self.settings['main_file'])
+            self.file_name = os.path.join(
+                os.path.dirname(self.file_name),
+                self.settings['main_file']
+            )
 
         # compile the LESS file
         return self.convertLess2Css(
             self.settings['lessc_command'],
             dirs=dirs,
-            file=fn,
+            file=self.file_name,
             minimised=self.settings['minimised'],
             outputFile=self.settings['output_file'],
             create_css_source_maps=self.settings['create_css_source_maps']
@@ -194,7 +191,7 @@ class Compiler:
         # if no file was specified take the file name if the current view
         less = file
         if not file:
-            less = self.view.file_name().encode("utf_8")
+            less = self.file_name
 
         # if the file name doesn't end on .less, stop processing it
         if not less.endswith(".less"):
@@ -331,15 +328,10 @@ class Compiler:
         # if none were provided we will assign a default
         base_dir = base_dir or './'
         output_dir = output_dir or ''
-        fn = self.view.file_name()
-        # in Python 3 all string are Unicode by default, we only have to encode
-        # when running on something lower than 3 in addition Windows uses
-        # UTF-16 for its file names so we don't encode to UTF-8 on Windows
-        if sys.version_info < (3, 0, 0) and not IS_WINDOWS:
-            fn = fn.encode("utf_8")
+
 
         # get the folder of the current file
-        file_dir = os.path.dirname(fn)
+        file_dir = os.path.dirname(self.file_name)
 
         # if output_dir is set to auto, try to find appropriate destination
         if output_dir == 'auto':
@@ -383,7 +375,7 @@ class Compiler:
         for folder in proj_folders:
             # we will have found the project folder when it matches
             # with the start of the current file name
-            if fn.startswith(folder):
+            if self.file_name.startswith(folder):
                 # keep the current folder as the project folder
                 proj_dir = folder
                 break
