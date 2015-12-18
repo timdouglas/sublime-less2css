@@ -138,7 +138,6 @@ class Compiler:
             self.settings['lessc_command'],
             dirs=dirs,
             less_file=self.file_name,
-            outputFile=self.settings['output_file'],
         )
 
     # for command 'AllLessToCssCommand'
@@ -174,7 +173,6 @@ class Compiler:
                         self.settings['lessc_command'],
                         dirs,
                         file=fn,
-                        outputFile=self.settings['output_file'],
                     )
                     # check the result of the compiler,
                     # if it isn't empty an error has occured
@@ -190,8 +188,7 @@ class Compiler:
         return ''
 
     # do convert
-    def convertLess2Css(self, lessc_command, dirs, less_file='',
-                          outputFile=''):
+    def convertLess2Css(self, lessc_command, dirs, less_file=''):
         out = ''
 
         # get the current file & its css variant
