@@ -139,7 +139,6 @@ class Compiler:
             dirs=dirs,
             less_file=self.file_name,
             outputFile=self.settings['output_file'],
-            create_css_source_maps=self.settings['create_css_source_maps']
         )
 
     # for command 'AllLessToCssCommand'
@@ -176,9 +175,6 @@ class Compiler:
                         dirs,
                         file=fn,
                         outputFile=self.settings['output_file'],
-                        create_css_source_maps=self.settings[
-                            'create_css_source_maps'
-                        ]
                     )
                     # check the result of the compiler,
                     # if it isn't empty an error has occured
@@ -195,7 +191,7 @@ class Compiler:
 
     # do convert
     def convertLess2Css(self, lessc_command, dirs, less_file='',
-                          outputFile='', create_css_source_maps=False):
+                          outputFile=''):
         out = ''
 
         # get the current file & its css variant
@@ -269,7 +265,7 @@ class Compiler:
         else:
             # the call for non minified CSS is the same on all platforms
             cmd = [lessc_command, less_file, css_file_name, "--verbose"]
-        if create_css_source_maps:
+        if self.settings['create_css_source_maps']:
             cmd.append('--source-map')
         print("[less2css] Converting " + less_file + " to " + css_file_name)
 
