@@ -83,6 +83,19 @@ class Compiler:
             else:
                 self.file_name = self.file_name.encode("utf_8")
 
+    def output_file_name(self, file_name):
+        # check if an output file has been specified
+        output_file = self.settings.get('output_file', '')
+        if output_file:
+            return output_file if output_file.endswith('.css') else \
+                '{}.css'.format(output_file)
+        else:
+            # when no output file is specified we take the name of the less
+            # file and substitute .less with .css
+            if self.settings['min_name']:
+                return re.sub('\.less$', '.min.css', file_name)
+            else:
+                return re.sub('\.less$', '.css', file_name)
 
     def convert_one(self, is_auto_save=False):
         """
@@ -124,7 +137,7 @@ class Compiler:
         return self.convertLess2Css(
             self.settings['lessc_command'],
             dirs=dirs,
-            file=self.file_name,
+            less_file=self.file_name,
             minimised=self.settings['minimised'],
             outputFile=self.settings['output_file'],
             create_css_source_maps=self.settings['create_css_source_maps']
@@ -183,55 +196,41 @@ class Compiler:
         return ''
 
     # do convert
-    def convertLess2Css(self, lessc_command, dirs, file='', minimised=True,
+    def convertLess2Css(self, lessc_command, dirs, less_file='', minimised=True,
                           outputFile='', create_css_source_maps=False):
         out = ''
 
         # get the current file & its css variant
         # if no file was specified take the file name if the current view
-        less = file
-        if not file:
-            less = self.file_name
+
+        if not less_file:
+            less_file = self.file_name
 
         # if the file name doesn't end on .less, stop processing it
-        if not less.endswith(".less"):
+        if not less_file.endswith(".less"):
             return ''
 
-        # check if an output file has been specified
-        if outputFile:
-            # if the outputfile doesn't end on .css make sure that
-            # it does by appending .css
-            if not outputFile.endswith(".css"):
-                css = outputFile + ".css"
-            else:
-                css = outputFile
-        else:
-            # when no output file is specified we take the name of the less
-            # file and substitute .less with .css
-            if self.settings['min_name']:
-                css = re.sub('\.less$', '.min.css', less)
-            else:
-                css = re.sub('\.less$', '.css', less)
+        css_file_name = self.output_file_name(less_file)
 
         # Check if the CSS file should be written to the same folder as
         # where the LESS file is
         if dirs['same_dir']:
             # set the folder for the CSS file to the same
             # folder as the LESS file
-            dirs['css'] = os.path.dirname(less)
+            dirs['css'] = os.path.dirname(less_file)
         elif dirs['shadow_folders']:
             # replace less in the path with css, this will shadow the
             # less folder structure
-            dirs['css'] = re.sub('less', 'css', os.path.dirname(less))
+            dirs['css'] = re.sub('less', 'css', os.path.dirname(less_file))
         # get the file name of the CSS file, including the extension
-        sub_path = os.path.basename(css)  # css file name
+        sub_path = os.path.basename(css_file_name)  # css file name
         # combine the folder for the CSS file with the file name, this
         # will be our target
-        css = os.path.join(dirs['css'], sub_path)
+        css_file_name = os.path.join(dirs['css'], sub_path)
 
         # create directories
         # get the name of the folder where we need to save the CSS file
-        output_dir = os.path.dirname(css)
+        output_dir = os.path.dirname(css_file_name)
         # if the folder doesn't exist, create it
         if not os.path.isdir(output_dir):
             os.makedirs(output_dir)
@@ -266,14 +265,15 @@ class Compiler:
 
         if _minifier:
             # create the command for calling the compiler
-            cmd = [lessc_command, less, css, _minifier, '--verbose']
+            cmd = [lessc_command, less_file, css_file_name, _minifier,
+                   '--verbose']
             print('[less2css] Using minifier : '+_minifier)
         else:
             # the call for non minified CSS is the same on all platforms
-            cmd = [lessc_command, less, css, "--verbose"]
+            cmd = [lessc_command, less_file, css_file_name, "--verbose"]
         if create_css_source_maps:
             cmd.append('--source-map')
-        print("[less2css] Converting " + less + " to " + css)
+        print("[less2css] Converting " + less_file + " to " + css_file_name)
 
         #run compiler, catch an errors that might come up
         try:
