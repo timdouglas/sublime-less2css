@@ -99,7 +99,7 @@ class Compiler:
 
         # if this method is called on auto save but auto compile is not enabled,
         # stop processing the file
-        if (is_auto_save and not self.settings['auto_compile']):
+        if is_auto_save and not self.settings['auto_compile']:
             return ''
 
         # check if files starting with an underscore should be ignored and
@@ -174,7 +174,7 @@ class Compiler:
                     )
                     # check the result of the compiler,
                     # if it isn't empty an error has occured
-                    if resp != "":
+                    if resp:
                         # keep count of the number of files that
                         # failed to compile
                         err_count += 1
@@ -192,16 +192,16 @@ class Compiler:
 
         # get the current file & its css variant
         # if no file was specified take the file name if the current view
-        if file == "":
+        less = file
+        if not file:
             less = self.view.file_name().encode("utf_8")
-        else:
-            less = file
+
         # if the file name doesn't end on .less, stop processing it
         if not less.endswith(".less"):
             return ''
 
         # check if an output file has been specified
-        if outputFile != "" and outputFile != None:
+        if outputFile:
             # if the outputfile doesn't end on .css make sure that
             # it does by appending .css
             if not outputFile.endswith(".css"):
@@ -218,11 +218,11 @@ class Compiler:
 
         # Check if the CSS file should be written to the same folder as
         # where the LESS file is
-        if (dirs['same_dir']):
+        if dirs['same_dir']:
             # set the folder for the CSS file to the same
             # folder as the LESS file
             dirs['css'] = os.path.dirname(less)
-        elif (dirs['shadow_folders']):
+        elif dirs['shadow_folders']:
             # replace less in the path with css, this will shadow the
             # less folder structure
             dirs['css'] = re.sub('less', 'css', os.path.dirname(less))
@@ -242,6 +242,23 @@ class Compiler:
         # if no alternate compiler has been specified, pick the default one
         if not lessc_command:
             lessc_command = "lessc"
+        # check if we're compiling with the default compiler
+        if lessc_command == "lessc":
+            if IS_WINDOWS:
+                # change command from lessc to lessc.cmd on Windows,
+                # only lessc.cmd works but lessc doesn't
+                cmd[0] = 'lessc.cmd'
+            else:
+                # if is not Windows, modify the PATH
+                env = os.getenv('PATH')
+                env = env + ':/usr/bin:/usr/local/bin:/usr/local/sbin'
+                os.environ['PATH'] = env
+                # check for the existance of the less compiler,
+                # exit if it can't be located
+                if subprocess.call(['which', lessc_command]) == 1:
+                    return sublime.error_message(
+                    'less2css error: `lessc` is not available'
+                    )
 
         # check if the compiler should create a minified CSS file
         _minifier = None
@@ -261,29 +278,11 @@ class Compiler:
             cmd.append('--source-map')
         print("[less2css] Converting " + less + " to " + css)
 
-        # check if we're compiling with the default compiler
-        if lessc_command == "lessc":
-            if IS_WINDOWS:
-                # change command from lessc to lessc.cmd on Windows,
-                # only lessc.cmd works but lessc doesn't
-                cmd[0] = 'lessc.cmd'
-            else:
-                # if is not Windows, modify the PATH
-                env = os.getenv('PATH')
-                env = env + ':/usr/bin:/usr/local/bin:/usr/local/sbin'
-                os.environ['PATH'] = env
-                # check for the existance of the less compiler,
-                # exit if it can't be located
-                if subprocess.call(['which', lessc_command]) == 1:
-                    return sublime.error_message(
-                    'less2css error: `lessc` is not available'
-                    )
-
         #run compiler, catch an errors that might come up
         try:
             # not sure if node outputs on stderr or stdout so capture both
             p = subprocess.Popen(
-                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
         except OSError as err:
             # an error has occured, stop processing the file any further
@@ -301,7 +300,7 @@ class Compiler:
 
         # if out is empty it means the LESS file was succesfuly compiled to CSS,
         # else we will print the error
-        if out == '':
+        if not out:
             print('[less2css] Convert completed!')
         else:
             print('----[less2cc] Compile Error----')
@@ -330,8 +329,8 @@ class Compiler:
         shadow_folders = False
         # make sure we have a base and output dir before we continue.
         # if none were provided we will assign a default
-        base_dir = './' if base_dir is None else base_dir
-        output_dir = '' if output_dir is None else output_dir
+        base_dir = base_dir or './'
+        output_dir = output_dir or ''
         fn = self.view.file_name()
         # in Python 3 all string are Unicode by default, we only have to encode
         # when running on something lower than 3 in addition Windows uses
@@ -395,7 +394,7 @@ class Compiler:
 
         # if the output_dir is empty or set to ./ it means the CSS file should
         # be placed in the same folder as the LESS file
-        if output_dir == '' or output_dir == './':
+        if output_dir in ['', './']:
             same_dir = True
         else:
             same_dir = False
