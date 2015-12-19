@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import sublime
+import itertools
 import subprocess
 
 IS_WINDOWS = True if sys.platform == 'win32' else False
@@ -189,7 +190,7 @@ class Compiler:
 
     # do convert
     def convertLess2Css(self, lessc_command, dirs, less_file=''):
-        out = ''
+        args = ['--verbose']
 
         # get the current file & its css variant
         # if no file was specified take the file name if the current view
@@ -234,7 +235,7 @@ class Compiler:
             if IS_WINDOWS:
                 # change command from lessc to lessc.cmd on Windows,
                 # only lessc.cmd works but lessc doesn't
-                cmd[0] = 'lessc.cmd'
+                lessc_command = 'lessc.cmd'
             else:
                 # if is not Windows, modify the PATH
                 env = os.getenv('PATH')
@@ -248,29 +249,32 @@ class Compiler:
                     )
 
         # check if the compiler should create a minified CSS file
-        _minifier = None
         if self.settings['minimised'] is True:
             _minifier = '--clean-css'
         elif type(self.settings.get('minimised')) is str:
             _minifier = self.settings.get('minimised', '')
 
         if _minifier:
-            # create the command for calling the compiler
-            cmd = [lessc_command, less_file, css_file_name, _minifier,
-                   '--verbose']
             print('[less2css] Using minifier : '+_minifier)
-        else:
-            # the call for non minified CSS is the same on all platforms
-            cmd = [lessc_command, less_file, css_file_name, "--verbose"]
+            args.append(_minifier)
+
         if self.settings['create_css_source_maps']:
-            cmd.append('--source-map')
+            args.append('--source-map')
+            print('[less2css] Using css source maps')
+
         print("[less2css] Converting " + less_file + " to " + css_file_name)
+
+        command = list(
+            itertools.chain.from_iterable(
+                [[lessc_command], args, [less_file, css_file_name]]
+            )
+        )
 
         #run compiler, catch an errors that might come up
         try:
             # not sure if node outputs on stderr or stdout so capture both
             p = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
         except OSError as err:
             # an error has occured, stop processing the file any further
