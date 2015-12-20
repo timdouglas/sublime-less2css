@@ -72,6 +72,10 @@ class Compiler:
             'create_css_source_maps': project_settings.get(
                 SETTING_CREATECSSSOURCEMAPS,
                 settings.get(SETTING_CREATECSSSOURCEMAPS)
+            ),
+            'autoprefix': project_settings.get(
+                SETTING_AUTOPREFIX,
+                settings.get(SETTING_AUTOPREFIX)
             )
         }
 
@@ -265,6 +269,10 @@ class Compiler:
         if self.settings['create_css_source_maps']:
             args.append('--source-map')
             print('[less2css] Using css source maps')
+
+        if self.settings['autoprefix']:
+            args.append('--autoprefix')
+            print('[less2css] add prefixes to {}'.format(css_file_name))
 
         print("[less2css] Converting " + less_file + " to " + css_file_name)
 
