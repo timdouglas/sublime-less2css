@@ -250,6 +250,7 @@ class Compiler:
                     )
 
         # check if the compiler should create a minified CSS file
+        _minifier = None
         if self.settings['minimised'] is True:
             _minifier = '--clean-css'
         elif type(self.settings.get('minimised')) is str:
