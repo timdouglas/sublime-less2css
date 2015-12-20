@@ -212,9 +212,11 @@ class Compiler:
             # folder as the LESS file
             dirs['css'] = os.path.dirname(less_file)
         elif dirs['shadow_folders']:
-            # replace less in the path with css, this will shadow the
-            # less folder structure
-            dirs['css'] = re.sub('less', 'css', os.path.dirname(less_file))
+            print(
+                '[less2css] Using shadowed folders: outputting to {}'.format(
+                    dirs['css']
+                )
+            )
         # get the file name of the CSS file, including the extension
         sub_path = os.path.basename(css_file_name)  # css file name
         # combine the folder for the CSS file with the file name, this
@@ -358,7 +360,9 @@ class Compiler:
                 output_dir = ''
         elif output_dir == 'shadow':
             shadow_folders = True
-            output_dir = re.sub('less', 'css', file_dir)
+            # replace last occurrence of less with css
+            parts = file_dir.rsplit('less', 1)
+            output_dir = 'css'.join(parts)
 
         # find project path
         # you can have multiple folders at the top level in a project but
