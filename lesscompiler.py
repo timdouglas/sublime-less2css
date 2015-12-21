@@ -21,6 +21,7 @@ SETTING_OUTPUTDIR = "outputDir"
 SETTING_OUTPUTFILE = "outputFile"
 SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps"
 SETTING_AUTOPREFIX = "autoprefix"
+SETTING_DISABLEVERBOSE = 'disableVerbose'
 
 
 class Compiler:
@@ -76,7 +77,12 @@ class Compiler:
             'autoprefix': project_settings.get(
                 SETTING_AUTOPREFIX,
                 settings.get(SETTING_AUTOPREFIX)
-            )
+            ),
+            'disable_verbose': project_settings.get(
+                SETTING_DISABLEVERBOSE,
+                settings.get(SETTING_DISABLEVERBOSE)
+            ),
+
         }
 
         # Get the filename and encode accordingly.
@@ -198,7 +204,7 @@ class Compiler:
 
     # do convert
     def convertLess2Css(self, lessc_command, dirs, less_file=''):
-        args = ['--verbose']
+        args = []
 
         # get the current file & its css variant
         # if no file was specified take the file name if the current view
@@ -276,6 +282,11 @@ class Compiler:
         if self.settings['autoprefix']:
             args.append('--autoprefix')
             print('[less2css] add prefixes to {}'.format(css_file_name))
+
+        # you must opt in to disable this option
+        if not self.settings['disable_verbose']:
+            args.append('--verbose')
+            print('[less2css] Using verbose mode')
 
         print("[less2css] Converting " + less_file + " to " + css_file_name)
 
