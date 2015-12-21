@@ -178,7 +178,7 @@ class Compiler:
                     resp = self.convertLess2Css(
                         self.settings['lessc_command'],
                         dirs,
-                        file=fn,
+                        less_file=fn,
                     )
                     # check the result of the compiler,
                     # if it isn't empty an error has occured
