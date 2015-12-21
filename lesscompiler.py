@@ -193,6 +193,9 @@ class Compiler:
             return "There were errors compiling all LESS files"
         return ''
 
+    # old function name keep for legacy
+    convertOne = convert_one
+
     # do convert
     def convertLess2Css(self, lessc_command, dirs, less_file=''):
         args = ['--verbose']
@@ -311,7 +314,6 @@ class Compiler:
             print(out)
 
         return out
-
 
     def parseBaseDirs(self, base_dir='./', output_dir=''):
         """
