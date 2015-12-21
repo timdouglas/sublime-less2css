@@ -11,6 +11,12 @@ Sublime Text 2 and 3 Plugin to compile less files to css on save. Requires lessc
 
 NB This plugin requires lessc to be in your execution path
 
+# Important notes:
+* If you have any issues raise them at : https://github.com/timdouglas/sublime-less2css/issues/
+* If using ruby less you will need to set `minify=false` and
+`disableVerbose=true` within your less2css settings. If you do not do this
+compiling of less files will not work.
+
 # Installation
 
 ## Install The Plugin
@@ -53,6 +59,11 @@ The allowed values are `true` and `false`. When this setting is set to `true` th
 
 ### createCssSourceMaps
 When `true` a css source map will be generated.
+
+## disableVerbose
+This option allows for the disabling of the verbose option which is used by
+default. The only time you might want / need to turn this off is then using
+the ruby gem less (which does not support --verbose).
 
 ### lessBaseDir
 This folder is only used when compiling all LESS files at once through *Tools \ Less>Css \ Compile all less in less base directory to css*. This can be an absolute path or a relative path. A relative path is useful when your projects always use the same structure, like a folder named `less` to keep all your LESS files in. When compiling all files at once it will also process all subfolders under the base folder.
