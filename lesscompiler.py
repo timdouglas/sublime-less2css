@@ -177,21 +177,21 @@ class Compiler:
                                 os.path.join(r, files)
                             )
                         )
-                else:
-                    # add path to file name
-                    fn = os.path.join(r, files)
-                    # call compiler
-                    resp = self.convertLess2Css(
-                        self.settings['lessc_command'],
-                        dirs,
-                        less_file=fn,
-                    )
-                    # check the result of the compiler,
-                    # if it isn't empty an error has occured
-                    if resp:
-                        # keep count of the number of files that
-                        # failed to compile
-                        err_count += 1
+                    else:
+                        # add path to file name
+                        fn = os.path.join(r, files)
+                        # call compiler
+                        resp = self.convertLess2Css(
+                            self.settings['lessc_command'],
+                            dirs,
+                            less_file=fn,
+                        )
+                        # check the result of the compiler,
+                        # if it isn't empty an error has occured
+                        if resp:
+                            # keep count of the number of files that
+                            # failed to compile
+                            err_count += 1
 
         # if err_count is more than 0 it means at least 1 error occurred while
         # compiling all LESS files
@@ -382,7 +382,7 @@ class Compiler:
         elif output_dir == 'shadow':
             shadow_folders = True
             # replace last occurrence of less with css
-            parts = file_dir.rsplit('less', 1)
+            parts = base_dir.rsplit('less', 1)
             output_dir = 'css'.join(parts)
 
         # find project path
