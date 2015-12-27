@@ -220,21 +220,25 @@ class Compiler:
 
         # Check if the CSS file should be written to the same folder as
         # where the LESS file is
+        css_dir = dirs['css']
         if dirs['same_dir']:
             # set the folder for the CSS file to the same
             # folder as the LESS file
-            dirs['css'] = os.path.dirname(less_file)
+            css_dir = os.path.dirname(less_file)
         elif dirs['shadow_folders']:
             print(
                 '[less2css] Using shadowed folders: outputting to {}'.format(
                     dirs['css']
                 )
             )
+            replacement = css_file_name.replace(dirs['less'], '')
+            css_dir = os.path.join(dirs['css'], os.path.dirname(
+                    replacement))
         # get the file name of the CSS file, including the extension
         sub_path = os.path.basename(css_file_name)  # css file name
         # combine the folder for the CSS file with the file name, this
         # will be our target
-        css_file_name = os.path.join(dirs['css'], sub_path)
+        css_file_name = os.path.join(css_dir, sub_path)
 
         # create directories
         # get the name of the folder where we need to save the CSS file
@@ -353,11 +357,12 @@ class Compiler:
         # get the folder of the current file
         file_dir = os.path.dirname(self.file_name)
 
+        # current[0] here will be the parent folder, while current[1]
+        # is the current folder name
+        current = os.path.split(file_dir)
+
         # if output_dir is set to auto, try to find appropriate destination
         if output_dir == 'auto':
-            # current[0] here will be the parent folder, while current[1]
-            # is the current folder name
-            current = os.path.split(file_dir)
             # parent[1] will be the parent folder name, while parent[0]
             # is the parent's parent path
             parent = os.path.split(current[0])
