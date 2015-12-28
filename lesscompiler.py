@@ -248,8 +248,10 @@ class Compiler:
             os.makedirs(output_dir)
 
         # if no alternate compiler has been specified, pick the default one
-        if not lessc_command:
-            lessc_command = "lessc"
+        if (type(lessc_command) is not str) or (not lessc_command):
+            lessc_command = 'lessc'
+        else:
+            print('[less2css] Using less compiler :: {}'.format(lessc_command))
         # check if we're compiling with the default compiler
         if lessc_command == "lessc":
             if IS_WINDOWS:
