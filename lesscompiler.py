@@ -231,9 +231,15 @@ class Compiler:
                     dirs['css']
                 )
             )
-            replacement = css_file_name.replace(dirs['less'], '')
-            css_dir = os.path.join(dirs['css'], os.path.dirname(
-                    replacement))
+            replacement = css_file_name.replace(
+                dirs['less'],
+                ''
+            )
+            # Strip off the slash this can cause issue within windows file paths
+            css_dir = os.path.join(
+                dirs['css'],
+                os.path.dirname(replacement.strip('/').strip('\\'))
+            )
         # get the file name of the CSS file, including the extension
         sub_path = os.path.basename(css_file_name)  # css file name
         # combine the folder for the CSS file with the file name, this
