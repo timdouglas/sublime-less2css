@@ -22,5 +22,5 @@
   "outputFile": "", //[example.css] if left blank uses same name of .less file
   "showErrorWithWindow": true,
   "autoprefix": false,
-  "disableVerbose":false,
+  "disableVerbose":false
 }
