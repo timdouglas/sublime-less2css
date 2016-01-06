@@ -212,8 +212,8 @@ class Compiler:
         if not less_file:
             less_file = self.file_name
 
-        # if the file name doesn't end on .less, stop processing it
-        if not less_file.endswith(".less"):
+        # if the current file name doesn't end on .less, stop processing it
+        if not self.view.file_name().endswith(".less"):
             return ''
 
         css_file_name = self.output_file_name(less_file)
