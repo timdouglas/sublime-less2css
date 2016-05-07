@@ -23,5 +23,5 @@
   "showErrorWithWindow": true,
   "autoprefix": false,
   "disableVerbose":false,
-  "silent":false,
+  "silent":false
 }
