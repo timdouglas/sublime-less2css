@@ -22,6 +22,7 @@ SETTING_OUTPUTFILE = "outputFile"
 SETTING_CREATECSSSOURCEMAPS = "createCssSourceMaps"
 SETTING_AUTOPREFIX = "autoprefix"
 SETTING_DISABLEVERBOSE = 'disableVerbose'
+SETTING_SILENT = 'silent'
 
 
 class Compiler:
@@ -82,7 +83,10 @@ class Compiler:
                 SETTING_DISABLEVERBOSE,
                 settings.get(SETTING_DISABLEVERBOSE)
             ),
-
+            'silent': project_settings.get(
+                SETTING_SILENT,
+                settings.get(SETTING_SILENT)
+            ),
         }
 
         # Get the filename and encode accordingly.
@@ -299,7 +303,11 @@ class Compiler:
         if not self.settings['disable_verbose']:
             args.append('--verbose')
             print('[less2css] Using verbose mode')
-
+        
+        if not self.settings['silent']:
+            args.append('--silent')
+            print('[less2css] Disabled warnings')
+        
         print("[less2css] Converting " + less_file + " to " + css_file_name)
 
         command = list(
