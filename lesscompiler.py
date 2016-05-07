@@ -303,8 +303,8 @@ class Compiler:
         if not self.settings['disable_verbose']:
             args.append('--verbose')
             print('[less2css] Using verbose mode')
-        
-        if not self.settings['silent']:
+            
+        if self.settings['silent']:
             args.append('--silent')
             print('[less2css] Disabled warnings')
         
