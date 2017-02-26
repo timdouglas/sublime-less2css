@@ -176,6 +176,9 @@ Set to `true` to see parse errors in a pop up window
 ### autoprefix
 Set to `true` to add prefixes to css after conversion from less
 
+### silent
+Set to `true` to stop any warnings from being shown.
+
 # Project settings
 You can use the configuration settings that are described above and apply them to just the project you are working on. In order to do this you need to manually alter the `.sublime-project` file. A default project file looks like this:
 
